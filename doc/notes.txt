@@ -1,0 +1,66 @@
+grammar
+	inject into Kernel
+	invokes new, passes in closure
+	include into instance
+	contains multiple builders
+
+builder
+	id, arbitrary attrs
+	...
+	then
+		allocate, next
+	first(id)
+		allocate, make first
+	lastly, last
+	before(id)
+		must be historical
+	after(id)
+	anytime, might(id)
+		default 50% random
+		position is random
+	or
+		re-use current allocation
+	to_s, to_str
+	to_a
+	to_gen => Generator
+
+phrase
+	say(id, text) { block }
+	nothing
+		empty say
+		assumed, but allowed for likelihood
+
+
+
+instruction
+=begin
+	only_if(id) { block }
+	only_unless(id) { block }
+		execute conditionals before weights
+=end
+	repeating(Range, :times) { block }
+	likely, weigted(int) { block }
+		raise if not or
+	assuming, presuming
+		Voter
+		Vote
+	forbidding
+
+anytime
+	assume:  once, anywhere
+	...
+	repeating(Range, :times) { block }
+	after(id)
+	before(id)
+	between(id, id)
+
+context
+	iteration
+	history of what's happened, in order
+	phrases
+
+reset
+
+phonetic alphabet
+	http://en.wikipedia.org/wiki/NATO_phonetic_alphabet
+	http://www.idolblog.com/node/2009821
