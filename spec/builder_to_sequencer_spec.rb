@@ -27,7 +27,8 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 
 	it "requires valid ids for befores and afters" do
 		builder = sentence_builder do
-			before(:missing).say('uh')		end
+			before(:missing).say('uh')
+		end
 		lambda { builder.to_sequencer }.should raise_error(SentenceBuilder::Error)
 
 		builder = sentence_builder do
@@ -71,10 +72,10 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 	end
 
 	it "properly sequences lasts" do
-		builder = sentence_builder :sequence_befores do
+		builder = sentence_builder do
 			last.say('too')
 			lastly.say('big')
-			says('feet')
+			say('feet')
 		end
 
 		sequencer = builder.to_sequencer
@@ -91,27 +92,160 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 		ids.should eql(%w{ feet too big })
 	end
 
-	it "firsts and lasts" do
+
+
+	it "before and after require referenceable ids" do
+		#	doesn't complain on build
+		builder = sentence_builder do
+			before(:say).say 'before'
+			say 'saying'
+		end
+		#	but during validation, etc.
+		lambda { builder.validate }.should raise_error SentenceBuilder::Error
+
+		builder = sentence_builder do
+			after(:say).say 'after'
+			say 'saying'
+		end
+		lambda { builder.validate }.should raise_error SentenceBuilder::Error
+	end
+
+	it "moves befores and afters into their own little worlds" do
+		builder = sentence_builder do
+			after(:say, :after).say 'after'
+			before(:say, :before).say 'before'
+			it(:say).says 'says'
+		end
+
+		sequencer = builder.to_sequencer
+		sequencer.should have(1).steps
+
+		#	before
+		sequencer.should have(1).befores
+		dep = sequencer.befores[:say]
+		dep.should have(1).items
+		dep.last.instructions.last.words.last.should eql('before')
+
+		#	after
+		sequencer.should have(1).afters
+		dep = sequencer.afters[:say]
+		dep.should have(1).items
+		dep.last.instructions.last.words.last.should eql('after')
+		
+		#	some more, to prove ordering
+		builder.append do
+			after(:say).say 'end'
+			before(:say).say 'begin'
+		end
+
+		sequencer = builder.to_sequencer
+
+		#	before		
+		words = []
+		sequencer.befores[:say].each do |before|
+			words << before.instructions.last.words.last
+		end
+		words.should eql(['begin', 'before'])
+
+		#	after		
+		words = []
+		sequencer.afters[:say].each do |after|
+			words << after.instructions.last.words.last
+		end
+		words.should eql(['after', 'end'])
+	end
+
+
+
+	it "anytime requires referenceable ids" do
+		#	doesn't complain on build
+		builder = sentence_builder do
+			anytime.say('dipsy').before(:say)
+			say 'doodle'
+		end
+		#	but during validation, etc.
+		lambda { builder.validate }.should raise_error SentenceBuilder::Error
+
+		builder = sentence_builder do
+			anytime.say('doodle').after(:say)
+			say 'dipsy'
+		end
+		lambda { builder.validate }.should raise_error SentenceBuilder::Error
+
+		builder = sentence_builder do
+			anytime.say('zzz').between(:night, :day)
+			say 'ni-night'
+		end
+		lambda { builder.validate }.should raise_error SentenceBuilder::Error
+	end
+	
+	it "anytimes go into their own little world" do
 		builder = sentence_builder :sequence_befores do
-			last.say('4')
-			first.say('2')
-			says('3')
+			anytime(:b).before(:say).say('before')
+			anytime(:a).after(:say).say('after')
+			anytime(:ab).say('somewhere').after(:b).before(:a)
+			anytime(:t).between(:b, :a).say('tween')
+			it(:say).says 'hello'
+		end
+
+		sequencer = builder.to_sequencer
+		sequencer.should have(1).steps
+		
+		sequencer.should have(4).anytimes
+		
+		ids = []
+		sequencer.anytimes.each do |anytime|
+			id = anytime.id
+			ids << id
+			anytime.before.should_not be_nil unless :a == id 
+			anytime.after.should_not be_nil unless :b == id 
+		end
+		
+		ids.should eql([:b, :a, :ab, :t])
+	end
+	
+	
+	
+	it "blends everything together perfectly" do
+		builder = sentence_builder :sequence_befores do
+			last(:late).say('4')
+			first(:early).say('2')
 			last.say('5')
 			first.say('1')
+
+			before(:late).say('3.9')
+			after(:early).say('2.1')
+			before(:early).say('1.9')
+			after(:late).say('4.1')
+
+			anytime.between(:early, :late).say('imaginary')
+			anytime.say('random')
+			
+			says('3')
 		end
 
 		sequencer = builder.to_sequencer
 		sequencer.should have(5).steps
 
-		ids = []
+		marks = []
 		sequencer.each do |phrase|
 			phrase.should have(1).instructions
 			words = phrase.instructions.last.words
 			words.should have(1).items
 
-			ids << words.last
+			marks << words.last
 		end
-		ids.should eql(%w{ 1 2 3 4 5 })
+		marks.should eql(%w{ 1 2 3 4 5 })
+		
+		sequencer.befores[:early].last.instructions.last.words.last.should eql('1.9')
+		sequencer.afters[:early].last.instructions.last.words.last.should eql('2.1')
+		sequencer.befores[:late].last.instructions.last.words.last.should eql('3.9')
+		sequencer.afters[:late].last.instructions.last.words.last.should eql('4.1')
+		
+		marks = []
+		sequencer.anytimes.each do |phrase|
+			marks << phrase.instructions.last.words.last
+		end
+		marks.should eql(%w{ imaginary random })
 	end
-
 end

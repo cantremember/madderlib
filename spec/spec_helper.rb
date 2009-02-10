@@ -30,4 +30,8 @@ module SentenceBuilder
 		def befores; @before; end
 		def afters; @after; end
 	end
+
+	class AnytimePhrase
+		attr_reader :repeat_logic
+	end
 end

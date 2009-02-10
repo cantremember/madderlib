@@ -30,6 +30,8 @@ module SentenceBuilder
 		end
 		alias :extend :append
 
+		
+		
 		def phrase
 			@phrases.last
 		end
@@ -44,11 +46,14 @@ module SentenceBuilder
 			end
 		end
 
+		
+		
 		def and_then(id=nil)
 			add_id id
 			@phrases << Phrase.new(id)
 			@phrases.last
 		end
+		alias :and :and_then
 		alias :then :and_then
 		alias :also :and_then
 
@@ -66,6 +71,7 @@ module SentenceBuilder
 			@phrases << AnytimePhrase.new(id)
 			ordered self.phrase, :anytime
 		end
+		alias :anywhere :anytime
 
 		def before(ref, id=nil)
 			#	executes before ref, but only if ref executes
@@ -90,6 +96,7 @@ module SentenceBuilder
 
 		def alternately
 			#	shorthand for 'or say...'
+			#	really, it's syntactic sugar
 			raise Error, "there is no active phrase.  start one with 'say'" unless self.phrase
 			self.phrase
 		end
@@ -100,6 +107,7 @@ module SentenceBuilder
 		def to_gen
 			Generator.new(self.to_sequencer)
 		end
+		alias :validate :to_gen
 
 		def to_a
 			a, g = [], self.to_gen
@@ -165,14 +173,22 @@ module SentenceBuilder
 					when :last
 						#	after all other lasts
 						sequence.push o.phrase
+
 					when :anytime
-						anytimes << o.phrase
+						#	guarantee valid references
+						phrase = o.phrase
+						
+						[phrase.before, phrase.after].each do |ref|
+							raise Error, "no such phrase : #{ref.inspect}" unless (!ref) || map[ref]
+						end
+						anytimes << phrase
+						
 					else
 						raise Error, "unknown ordering : #{o.type.inspect}"
 				end
 			end
 
-			befores, afters = {}
+			befores, afters = {}, {}
 			@depends.each do |o|
 				ref = o.ref
 				raise Error, "no such phrase : #{ref.inspect}" unless map[ref]

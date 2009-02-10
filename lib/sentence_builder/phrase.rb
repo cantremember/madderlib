@@ -31,21 +31,12 @@ module SentenceBuilder
 
 
 	class AnytimePhrase < Phrase
-		attr_reader :repeat_logic
-		attr_accessor :before
-		attr_accessor :after
-
 		def initialize(*args)
 			super
 
 			#	assume once, and no position limits
 			@times = 1
 		end
-=begin
-			!!!
-			default 50% random
-			position is random
-=end
 
 		def repeating(*args, &block)
 			#	if we get a block, use it!
@@ -103,9 +94,34 @@ module SentenceBuilder
 			@repeat_logic = how
 		end
 
+		
+		
+		def before(ref=nil)
+			if ref
+				#	settter
+				@before = ref
+				self
+			else
+				#	getter
+				@before
+			end
+		end
+		
+		def after(ref=nil)
+			if ref
+				#	settter
+				@after = ref
+				self
+			else
+				#	getter
+				@after
+			end
+		end
+		
 		def between(a, b)
 			after a
 			before b
+			self
 		end
 
 

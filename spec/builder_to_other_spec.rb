@@ -8,9 +8,9 @@ describe SentenceBuilder::Builder, "to Generator, Array, etc" do
 	end
 
 
-
 	it "converts to a Generator" do
-		#	!!!		@builder.to_gen	end
+		#	!!!		@builder.to_gen
+	end
 
 	it "converts to an Array" do
 		#	!!!
@@ -24,6 +24,6 @@ describe SentenceBuilder::Builder, "to Generator, Array, etc" do
 
 	it "converts to a String, with separator" do
 		#	!!!
-		@builder.to_s("\n")
+		@builder.to_s("\n");
 	end
 end
