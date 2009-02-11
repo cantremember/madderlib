@@ -30,6 +30,7 @@ module SentenceBuilder
 		def befores; @before; end
 		def afters; @after; end
 
+		send :public, :sequence
 		send :public, :traverse
 	end
 

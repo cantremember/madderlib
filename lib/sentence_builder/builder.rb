@@ -56,6 +56,14 @@ module SentenceBuilder
 		alias :and :and_then
 		alias :then :and_then
 		alias :also :and_then
+		
+		#	syntactic sugar, requiring an id
+		def an(id)
+			and_then id
+		end
+		alias :a :an
+		
+		
 
 		def first(id=nil)
 			ordered and_then(id), :first
@@ -208,7 +216,7 @@ module SentenceBuilder
 				end
 			end
 
-			Sequencer.new(sequence, :anytime => anytimes, :before => befores, :after => afters)
+			Sequencer.new(self, sequence, :anytime => anytimes, :before => befores, :after => afters)
 		end
 	end
 end

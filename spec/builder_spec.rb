@@ -138,7 +138,7 @@ describe SentenceBuilder::Builder, "building" do
 
 		@builder = SentenceBuilder::Builder.new do
 			say 'hello'
-			and_then.say 'goodbye'
+			also.say 'goodbye'
 		end
 
 		@builder.should have(2).phrases
@@ -146,7 +146,8 @@ describe SentenceBuilder::Builder, "building" do
 		#	with an id
 		@builder = SentenceBuilder::Builder.new(:id) do
 			say 'hello'
-			and_then.say 'goodbye'
+			#	just testing syntactic sugar
+			an(:other).says 'goodbye'
 		end
 
 		@builder.id.should equal(:id)
