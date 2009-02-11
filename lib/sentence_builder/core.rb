@@ -77,3 +77,7 @@ module SentenceBuilder
 		alias :complete :close
 	end
 end
+
+
+#	inject into the Kernel
+include SentenceBuilder::KernelMethods

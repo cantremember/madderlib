@@ -1,4 +1,4 @@
-%w{ enumerator generator }.each {|lib| require lib }
+%w{ generator }.each {|lib| require lib }
 
 
 
@@ -211,50 +211,4 @@ module SentenceBuilder
 			Sequencer.new(sequence, :anytime => anytimes, :before => befores, :after => afters)
 		end
 	end
-
-
-
-	class Sequencer
-		include Enumerable
-
-		attr_reader :steps
-
-		def initialize(steps, attrs={})
-			@steps = steps
-
-			#	arbitrary attributes for convenience
-			(attrs || {}).each do |k, v|
-				self.instance_variable_set "@#{k}".to_sym, v
-			end
-
-			#	prime
-			@anytime ||= []
-			@before ||= {}
-			@after ||= {}
-		end
-
-		def before(ref)
-			@before[ref]
-		end
-
-		def after(ref)
-			@after[ref]
-		end
-
-		def each
-			#	!!!
-			list = steps.clone
-			#	each step is a Phrase
-			#	we've cached it in a list
-			###Enumerator.new(list)
-			###Enumerator.new(list, :items)
-			#	gawd, that's all wrong...
-			#	you have to implement the block traversal
-			list.each {|item| yield item }
-		end
-	end
 end
-
-
-#	inject into the Kernel
-include SentenceBuilder::KernelMethods

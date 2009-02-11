@@ -26,6 +26,15 @@ module SentenceBuilder
 			#	say nothing
 			say
 		end
+		
+
+				
+		def speak(context)
+			#	!!!
+			#	conditionals
+			@used ||= 0
+			((@used += 1) == 1 ? instructions.first.words.clone : [])  
+		end
 	end
 
 
@@ -38,6 +47,8 @@ module SentenceBuilder
 			@times = 1
 		end
 
+		
+		
 		def repeating(*args, &block)
 			#	if we get a block, use it!
 			@repeat_logic = block
@@ -182,11 +193,5 @@ module SentenceBuilder
 		def empty?
 			@words.empty?
 		end
-	end
-
-
-
-	class Context
-		attr_reader :repeats
 	end
 end

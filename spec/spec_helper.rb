@@ -29,6 +29,8 @@ module SentenceBuilder
 		def anytimes; @anytime; end
 		def befores; @before; end
 		def afters; @after; end
+
+		send :public, :traverse
 	end
 
 	class AnytimePhrase
