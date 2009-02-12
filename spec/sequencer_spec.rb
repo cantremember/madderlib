@@ -3,9 +3,24 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 
 
 describe SentenceBuilder::Sequencer do
-	def pound_on
-		#	that'll be enough
-		100.times { yield }
+
+	it "supports setup and teardown blocks" do
+		holder = [:setup]
+
+		sequencer = (sentence_builder do
+			#	takes context, uses data, get and set local scope
+			setup {|context| context.data[:word] = holder.pop }
+
+			#	takes context
+			say {|context| context.data[:word] }
+
+			#	doesn't need context, set local scope
+			teardown { holder << :teardown }
+		end).to_sequencer
+
+		sequencer.items.should eql(%w{ setup })
+		holder.should have(1).item
+		holder.first.should equal(:teardown)
 	end
 
 

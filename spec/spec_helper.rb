@@ -1,11 +1,21 @@
-#	our dependencies
-require File.join(File.dirname(__FILE__), '..', 'lib', 'sentence_builder')
-
 #	external
 %w{ rubygems spec }.each {|lib| require lib }
 
 #	optional
 require 'ruby-debug' rescue nil
+
+#	our dependencies
+#	loaded after debug is ready
+require File.join(File.dirname(__FILE__), '..', 'lib', 'sentence_builder')
+
+
+
+module Spec::DSL::Main
+	def pound_on
+		#	that'll be enough
+		100.times { yield }
+	end
+end
 
 
 
@@ -34,7 +44,7 @@ module SentenceBuilder
 		send :public, :traverse
 	end
 
-	class Phrase
+	class Instruction
 		class << self
 			send :public, :wordify
 		end

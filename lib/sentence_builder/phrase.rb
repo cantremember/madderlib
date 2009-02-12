@@ -1,17 +1,16 @@
 module SentenceBuilder
 	class Phrase
 		class << self
-			include Conditional::Pattern::Static
+			include Conditional::Registry::Static
 		end
-		include Conditional::Pattern::Instance
-		include Conditional::Closure::Phrase
+		include Conditional::Registry::Instance
 
-		attr_reader :id, :instructions
-
+		attr_reader :builder, :id, :instructions
 
 
-		def initialize(id=nil, *args, &block)
-			@id = id
+
+		def initialize(builder, id=nil, *args, &block)
+			@builder, @id = builder, id
 			@instructions = []
 
 			#	don't start out with an empty instruction
@@ -21,13 +20,21 @@ module SentenceBuilder
 		def say(*args, &block)
 			#	allocate new
 			@instructions << Instruction.new(self, *args, &block)
+
+			if @or_likely
+				#	retro-apply the likelihood from the 'or' operation
+				args, block = @or_likely
+				#!!!	self.instruction.likely *args, &block
+				@or_likely = nil
+			end
+
 			self
 		end
 		alias :says :say
 
-		def or
-			#!!!
-			#	syntactic sugar
+		def or(*args, &block)
+			#	hold onto these until we say something
+			@or_likely = [args, block]
 			self
 		end
 
@@ -39,6 +46,8 @@ module SentenceBuilder
 
 
 		def instruction
+			raise Error, 'there is no current Instruction' if @instructions.empty?
+
 			#	whatever our current once is
 			@instructions.last
 		end
@@ -46,42 +55,17 @@ module SentenceBuilder
 
 
 		def speak(context)
-			#	!!!
-			#	conditionals
 			found = instructions.find do |instruction|
 				instruction.test(context)
 			end
 
-			#	immediately wordify everything
-			#		that way we eliminate the nils before my caller sees them
-			words = []
-			if found
-				found.words.each do |value|
-					word = self.class.wordify(value)
-					words << word if word
-				end
-			end
-
-			words
+			(found ? found.speak(context) : [])
 		end
 
 
 
-		#	- - - - -
-		protected
-
-		class << self
-			def wordify(word)
-				case word
-					when Proc
-						word.call
-					when String
-						word
-					else
-						word.to_s
-				end
-			end
-		end
+		include Conditional::Allowed::Phrase
+		include Conditional::Repeat::Phrase
 	end
 
 
@@ -89,67 +73,6 @@ module SentenceBuilder
 	class AnytimePhrase < Phrase
 		def initialize(*args)
 			super
-
-			#	assume once, and no position limits
-			@times = 1
-		end
-
-
-
-		def repeating(*args, &block)
-			#	if we get a block, use it!
-			@repeat_logic = block
-			if @repeat_logic
-				raise 'block AND arguments provided, remove one or the other' unless args.empty?
-				raise 'block arity should be 0 or 1 (count)' unless (block.arity < 2)
-				return
-			end
-
-			#	guess we have to work for this
-			arg = args.pop
-
-			begin
-				if Range === arg
-					#	we support that
-					how = arg
-					arg = args.pop
-				elsif arg.integer?
-					lower, arg = arg, args.pop
-
-					if arg.integer?
-						#	we can make a range from that
-						how = Range.new(lower, arg)
-					else
-						#	just a count
-						how = lower
-					end
-					arg = args.pop
-				else
-					raise Error, "invalid repeating argument : #{arg.inspect}"
-				end
-			rescue Error => e
-				raise e
-			rescue Exception => e
-				#	wrap
-				raise Error.new("invalid repeating argument : #{arg.inspect}", e)
-			end
-
-			#	we will have advanced to the next argument
-			case arg
-				when :minutes
-					#	a temporary hack, for literal Conet building
-					if Range === how
-						how = Range.new(how.lower * MINUTE_MULTIPLIER, how.upper * MINUTE_MULTIPLIER)
-					else
-						how *= MINUTE_MULTIPLIER
-					end
-				#when :times
-				#when nil
-				#	all of those are no-op conditions
-			end
-
-			#	now we know how
-			@repeat_logic = how
 		end
 
 
@@ -185,65 +108,23 @@ module SentenceBuilder
 		def speak(context)
 			#	!!!
 			#	conditionals
-			spoken = if context.state[self].nil?
+			spoken = if context.state(self).empty?
 				super
 			else
 				[]
 			end
-			context.state[self] = true
+			context.state(self)[:done] = true
 			spoken
 		end
-
-
-
-		class Voter
-			attr_reader :instruction, :count
-
-			def initialize(instruction)
-				@instruction = instruction
-				@count = 0
-
-				logic = @instruction.repeat_logic
-				case logic
-					when Proc
-						@logic = logic
-					when Range
-						limit = logic.rand
-						@logic = lambda { @count < limit }
-					else
-						limit = rand(logic)
-						@logic = lambda { @count < limit }
-				end
-			end
-
-			def vote(context)
-				#	!!!
-				#		before
-				#		after
-				(@logic.arity == 0 ? @logic.call : @logic.call(context) )
-			end
-
-			def touch
-				@count += 1
-			end
-		end
-
-
-
-		#	- - - - -
-		private
-
-		MINUTE_MULTIPLIER = 3
 	end
 
 
 
 	class Instruction
 		class << self
-			include Conditional::Pattern::Static
+			include Conditional::Registry::Static
 		end
-		include Conditional::Pattern::Instance
-		include Conditional::Closure::Instruction
+		include Conditional::Registry::Instance
 
 		attr_reader :phrase, :words
 
@@ -259,6 +140,38 @@ module SentenceBuilder
 
 		def empty?
 			@words.empty?
+		end
+
+
+
+		def speak(context)
+			#	immediately wordify everything
+			#		immediate evaluation allows for more custom operations
+			#		that way we eliminate the nils before my caller sees them
+			words.inject([]) do |a, word|
+				word = self.class.wordify(word, context)
+				a << word if word
+				a
+			end
+		end
+
+
+
+		include Conditional::Allowed::Instruction
+		include Conditional::Repeat::Instruction
+
+		#	- - - - -
+		protected
+
+		class << self
+			def wordify(word, context)
+				if (Proc === word)
+					#	evaluate
+					word = Context.invoke(word, context)
+				end
+
+				(String === word ? word : word.to_s)
+			end
 		end
 	end
 end

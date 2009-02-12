@@ -6,9 +6,9 @@ module SentenceBuilder
 	module Spec
 		class Phrase
 			class << self
-				include Conditional::Pattern::Static
+				include Conditional::Registry::Static
 			end
-			include Conditional::Pattern::Instance
+			include Conditional::Registry::Instance
 
 			def instructions
 				@instructions ||= []
@@ -17,16 +17,16 @@ module SentenceBuilder
 
 		class Instruction
 			class << self
-				include Conditional::Pattern::Static
+				include Conditional::Registry::Static
 			end
-			include Conditional::Pattern::Instance
+			include Conditional::Registry::Instance
 		end
 	end
 end
 
 
 
-describe SentenceBuilder::Conditional::Pattern do
+describe SentenceBuilder::Conditional::Registry do
 	it "accumulates phrase preprations" do
 		hits = []
 

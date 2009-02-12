@@ -34,6 +34,18 @@ module SentenceBuilder
 
 
 
+		def setup(&block)
+			Context.validate(block)
+			@setup = block
+		end
+
+		def teardown(&block)
+			Context.validate(block)
+			@teardown = block
+		end
+
+
+
 		#	the current phrase
 		def phrase
 			@phrases.last
@@ -43,7 +55,7 @@ module SentenceBuilder
 		#	another phrase, id is optional
 		def and_then(id=nil)
 			add_id id
-			@phrases << Phrase.new(id)
+			@phrases << Phrase.new(self, id)
 			@phrases.last
 		end
 		alias :and :and_then
@@ -71,7 +83,7 @@ module SentenceBuilder
 
 		def anytime(id=nil)
 			add_id id
-			@phrases << AnytimePhrase.new(id)
+			@phrases << AnytimePhrase.new(self, id)
 			ordered self.phrase, :anytime
 		end
 		alias :anywhere :anytime
@@ -220,7 +232,10 @@ module SentenceBuilder
 				end
 			end
 
-			Sequencer.new(self, sequence, :anytime => anytimes, :before => befores, :after => afters)
+			Sequencer.new(self, sequence, map.keys, {
+				:anytime => anytimes, :before => befores, :after => afters,
+				:setup => @setup, :teardown => @teardown
+			})
 		end
 	end
 end

@@ -1,11 +1,11 @@
 module SentenceBuilder
 	module Conditional
-		module Pattern
+		module Registry
 
 			module Static
 				#	registers a preparation closure for the container
 				def add_prepare(&block)
-					raise Error, 'block required' unless block_given?
+					Context.validate(block)
 					conditional_prepares << block
 				end
 
@@ -31,7 +31,7 @@ module SentenceBuilder
 				def prepare(context)
 					#	execute all of our registered preparation blocks
 					self.class.conditional_prepares.each do |block|
-						(block.arity == 0 ? block.call : block.call(context))
+						Context.invoke(block, context)
 					end
 
 					if self.methods.include?('instructions')

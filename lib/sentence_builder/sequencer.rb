@@ -2,11 +2,10 @@ module SentenceBuilder
 	class Sequencer
 		include Enumerable
 
-		attr_reader :builder, :steps
+		attr_reader :builder, :steps, :ids
 
-		def initialize(builder, steps, attrs={})
-			@builder = builder
-			@steps = steps
+		def initialize(builder, steps, ids, attrs={})
+			@builder, @steps, @ids = builder, steps, ids
 
 			#	arbitrary attributes for convenience
 			(attrs || {}).each do |k, v|
@@ -70,6 +69,11 @@ module SentenceBuilder
 			#		same logic for each before / after as above
 			#	then, pepper in the anytimes, including boundaries, etc
 			context = Context.new(self)
+
+			if (@setup)
+				#	dispatch to the setup block
+				Context.invoke(@setup, context)
+			end
 
 			#	all the basic steps
 			#		one node per phrase
@@ -208,6 +212,11 @@ module SentenceBuilder
 				node = node.after
 			end
 
+			if (@teardown)
+				#	dispatch to the setup block
+				Context.invoke(@teardown, context)
+			end
+
 			flattened
 		end
 
@@ -217,7 +226,13 @@ module SentenceBuilder
 				words = [words] unless Array === words
 
 				#	remember how it was used
-				(words.empty? ? context.silent : context.spoken) << phrz
+				if words.empty?
+					context.silent << phrz
+				else
+					context.spoken << phrz
+					context.spoken_ids << phrz.id if phrz.id
+				end
+
 				words
 			end
 
@@ -298,12 +313,32 @@ module SentenceBuilder
 		attr_reader :sequencer
 		attr_reader :spoken
 		attr_reader :silent
-		attr_reader :state
+		attr_reader :spoken_ids
+		attr_reader :data
 
 		def initialize(sequencer)
 			@sequencer = sequencer
-			@spoken, @silent = [], []
-			@state = {}
+			@spoken, @silent, @spoken_ids = [], [], []
+			@state, @data = {}, {}
+		end
+
+		def state(key)
+			hash = @state[key]
+			@state[key] = hash = {} unless hash
+			hash
+		end
+
+
+
+		class << self
+			def validate(block)
+				raise Error, 'block required' unless block
+				raise Error, 'block arity should be 0 or 1 (Context)' unless (block.arity < 2)
+			end
+
+			def invoke(block, context)
+				(block.arity == 0 ? block.call : block.call(context))
+			end
 		end
 	end
 end

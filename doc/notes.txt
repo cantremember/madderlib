@@ -33,21 +33,16 @@ phrase
 
 
 conditional
-=begin
-	only_if(id) { block }
-	only_unless(id) { block }
+	assuming, presuming
+	assuming(id)
+	forbidding
+	forbidding(id)
 		execute conditionals before weights
-=end
-!!!
+	...
 	repeating(Range, :times) { block }
-!!!
+	...
 	likely, weigted(int) { block }
 		raise if not or
-!!!
-	assuming, presuming
-		Voter
-		Vote
-	forbidding
 
 anytime
 	assume:  once, anywhere
@@ -56,7 +51,7 @@ anytime
 	before(id)
 	between(id, id)
 !!!
-	repeating(Range, :times) { block }
+	recurring(Range, :times) { block }
 
 context
 	sequence
