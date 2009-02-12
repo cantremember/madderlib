@@ -21,6 +21,7 @@ describe Range do
 			Range.new(0, 4).each do |precision|
 				100.times do
 					value = range.rand(precision)
+					value.integer?.should be_true if (precision == 0)
 					value.should satisfy {|v| (v >= span.min) && (v < span.max) }
 				end
 			end

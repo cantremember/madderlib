@@ -114,7 +114,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 		builder = sentence_builder do
 			after(:say, :after).say 'after'
 			before(:say, :before).say 'before'
-			it(:say).says 'says'
+			a(:say).says 'says'
 		end
 
 		sequencer = builder.to_sequencer
@@ -131,7 +131,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 		dep = sequencer.afters[:say]
 		dep.should have(1).items
 		dep.last.instructions.last.words.last.should eql('after')
-		
+
 		#	some more, to prove ordering
 		builder.append do
 			after(:say).say 'end'
@@ -140,14 +140,14 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 
 		sequencer = builder.to_sequencer
 
-		#	before		
+		#	before
 		words = []
 		sequencer.befores[:say].each do |before|
 			words << before.instructions.last.words.last
 		end
 		words.should eql(['begin', 'before'])
 
-		#	after		
+		#	after
 		words = []
 		sequencer.afters[:say].each do |after|
 			words << after.instructions.last.words.last
@@ -178,34 +178,34 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 		end
 		lambda { builder.validate }.should raise_error SentenceBuilder::Error
 	end
-	
+
 	it "anytimes go into their own little world" do
 		builder = sentence_builder :sequence_befores do
 			anytime(:b).before(:say).say('before')
 			anytime(:a).after(:say).say('after')
 			anytime(:ab).say('somewhere').after(:b).before(:a)
 			anytime(:t).between(:b, :a).say('tween')
-			it(:say).says 'hello'
+			a(:say).says 'hello'
 		end
 
 		sequencer = builder.to_sequencer
 		sequencer.should have(1).steps
-		
+
 		sequencer.should have(4).anytimes
-		
+
 		ids = []
 		sequencer.anytimes.each do |anytime|
 			id = anytime.id
 			ids << id
-			anytime.before.should_not be_nil unless :a == id 
-			anytime.after.should_not be_nil unless :b == id 
+			anytime.before.should_not be_nil unless :a == id
+			anytime.after.should_not be_nil unless :b == id
 		end
-		
+
 		ids.should eql([:b, :a, :ab, :t])
 	end
-	
-	
-	
+
+
+
 	it "blends everything together perfectly" do
 		builder = sentence_builder :sequence_befores do
 			last(:late).say('4')
@@ -220,7 +220,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 
 			anytime.between(:early, :late).say('imaginary')
 			anytime.say('random')
-			
+
 			says('3')
 		end
 
@@ -228,7 +228,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 		sequencer.should have(5).steps
 
 		marks = []
-		sequencer.each do |phrase|
+		sequencer.steps.each do |phrase|
 			phrase.should have(1).instructions
 			words = phrase.instructions.last.words
 			words.should have(1).items
@@ -236,12 +236,12 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 			marks << words.last
 		end
 		marks.should eql(%w{ 1 2 3 4 5 })
-		
+
 		sequencer.befores[:early].last.instructions.last.words.last.should eql('1.9')
 		sequencer.afters[:early].last.instructions.last.words.last.should eql('2.1')
 		sequencer.befores[:late].last.instructions.last.words.last.should eql('3.9')
 		sequencer.afters[:late].last.instructions.last.words.last.should eql('4.1')
-		
+
 		marks = []
 		sequencer.anytimes.each do |phrase|
 			marks << phrase.instructions.last.words.last

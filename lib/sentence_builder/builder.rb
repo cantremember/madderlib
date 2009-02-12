@@ -4,6 +4,8 @@
 
 module SentenceBuilder
 	class Builder
+		include Enumerable
+		
 		attr_reader :id, :phrases, :phrase_ids
 
 		def initialize(id=nil, &block)
@@ -32,22 +34,13 @@ module SentenceBuilder
 
 		
 		
+		#	the current phrase
 		def phrase
 			@phrases.last
 		end
-
-		def it(id=nil)
-			if id.nil?
-				#	without an id, you get the current phrase
-				phrase
-			else
-				#	otherwise, allocate
-				and_then id
-			end
-		end
-
+		alias :it :phrase
 		
-		
+		#	another phrase, id is optional
 		def and_then(id=nil)
 			add_id id
 			@phrases << Phrase.new(id)
@@ -57,11 +50,13 @@ module SentenceBuilder
 		alias :then :and_then
 		alias :also :and_then
 		
-		#	syntactic sugar, requiring an id
+		#	another phrase, id is required
+		#	for semantic sugar
 		def an(id)
 			and_then id
 		end
 		alias :a :an
+		alias :new :an
 		
 		
 

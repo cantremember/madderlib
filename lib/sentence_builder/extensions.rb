@@ -5,7 +5,7 @@ class Range
 
 		min + if precision == 0
 			#	no effort required
-			Kernel.rand(max - min)
+			Kernel.rand(max - min).floor
 		else
 			#	some precision
 			p = (10 ** precision).to_f

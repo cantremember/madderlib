@@ -36,18 +36,20 @@ describe SentenceBuilder::Builder, "building" do
 		@builder.phrase.should equal(phrase)
 
 		#	one more, with an id
-		phrase = @builder.also
+		phrase = @builder.also(:id)
+		phrase.id.should equal(:id)
 
 		@builder.should have(3).phrases
 		@builder.phrases.last.should equal(phrase)
 		@builder.phrase.should equal(phrase)
 	end
 
-	it "has id support for all phrase construction methods" do
+	it "has id support for some phrase construction methods, not for others" do
 		[
-			:it,
+			:a, :an, :new,
 			:then, :and_then, :also,
 			:first, :last, :lastly,
+			:anytime,
 		].each do |method|
 			#	the method takes just an id
 			phrase = @builder.__send__ method, method
@@ -63,33 +65,39 @@ describe SentenceBuilder::Builder, "building" do
 		end
 	end
 
-	it "it with no id returns the current phrase, like #phrase" do
+	it "#it is an alias for #phrase" do
 		@builder.it.should equal(@builder.phrase)
+		@builder.it.should be_nil 
 
 		@builder.then
 		@builder.should have(1).phrases
 		@builder.it.should equal(@builder.phrase)
 	end
 
-	it "it with an id creates a new phrase, like #then" do
+	it "#a & #and are aliases for #and_then, requiring an id" do
 		@builder.should have(0).phrases
 
 		phrase = @builder.phrase
-		@builder.it(:new).should_not equal(phrase)
+		@builder.a(:new).should_not equal(phrase)
 		@builder.should have(1).phrases
 
 		phrase = @builder.phrase
 
-		@builder.it(:another).should_not equal(phrase)
+		@builder.an(:other).should_not equal(phrase)
 		@builder.should have(2).phrases
+
+		phrase = @builder.phrase
+
+		@builder.new(:phrase).should_not equal(phrase)
+		@builder.should have(3).phrases
 	end
 
 	it "will not permit duplicate phrase ids" do
 		#	this will apply to all id-capable methods
-		@builder.it(:first)
-		@builder.it(:second)
-		lambda { @builder.it(:first) }.should raise_error(SentenceBuilder::Error)
-		lambda { @builder.it(:second) }.should raise_error(SentenceBuilder::Error)
+		@builder.a(:first)
+		@builder.a(:second)
+		lambda { @builder.a(:first) }.should raise_error(SentenceBuilder::Error)
+		lambda { @builder.a(:second) }.should raise_error(SentenceBuilder::Error)
 	end
 
 

@@ -26,14 +26,13 @@ module SentenceBuilder
 			#	say nothing
 			say
 		end
-		
 
-				
+
+
 		def speak(context)
 			#	!!!
 			#	conditionals
-			@used ||= 0
-			((@used += 1) == 1 ? instructions.first.words.clone : [])  
+			instructions.first.words.clone
 		end
 	end
 
@@ -47,8 +46,8 @@ module SentenceBuilder
 			@times = 1
 		end
 
-		
-		
+
+
 		def repeating(*args, &block)
 			#	if we get a block, use it!
 			@repeat_logic = block
@@ -105,8 +104,8 @@ module SentenceBuilder
 			@repeat_logic = how
 		end
 
-		
-		
+
+
 		def before(ref=nil)
 			if ref
 				#	settter
@@ -117,7 +116,7 @@ module SentenceBuilder
 				@before
 			end
 		end
-		
+
 		def after(ref=nil)
 			if ref
 				#	settter
@@ -128,11 +127,23 @@ module SentenceBuilder
 				@after
 			end
 		end
-		
+
 		def between(a, b)
 			after a
 			before b
 			self
+		end
+
+		def speak(context)
+			#	!!!
+			#	conditionals
+			spoken = if context.state[self].nil?
+				super
+			else
+				[]
+			end
+			context.state[self] = true
+			spoken
 		end
 
 
