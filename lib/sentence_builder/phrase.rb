@@ -1,6 +1,14 @@
 module SentenceBuilder
 	class Phrase
+		class << self
+			include Conditional::Pattern::Static
+		end
+		include Conditional::Pattern::Instance
+		include Conditional::Closure::Phrase
+
 		attr_reader :id, :instructions
+
+
 
 		def initialize(id=nil, *args, &block)
 			@id = id
@@ -18,6 +26,7 @@ module SentenceBuilder
 		alias :says :say
 
 		def or
+			#!!!
 			#	syntactic sugar
 			self
 		end
@@ -29,10 +38,49 @@ module SentenceBuilder
 
 
 
+		def instruction
+			#	whatever our current once is
+			@instructions.last
+		end
+
+
+
 		def speak(context)
 			#	!!!
 			#	conditionals
-			instructions.first.words.clone
+			found = instructions.find do |instruction|
+				instruction.test(context)
+			end
+
+			#	immediately wordify everything
+			#		that way we eliminate the nils before my caller sees them
+			words = []
+			if found
+				found.words.each do |value|
+					word = self.class.wordify(value)
+					words << word if word
+				end
+			end
+
+			words
+		end
+
+
+
+		#	- - - - -
+		protected
+
+		class << self
+			def wordify(word)
+				case word
+					when Proc
+						word.call
+					when String
+						word
+					else
+						word.to_s
+				end
+			end
 		end
 	end
 
@@ -191,7 +239,15 @@ module SentenceBuilder
 
 
 	class Instruction
+		class << self
+			include Conditional::Pattern::Static
+		end
+		include Conditional::Pattern::Instance
+		include Conditional::Closure::Instruction
+
 		attr_reader :phrase, :words
+
+
 
 		def initialize(phrase, *args, &block)
 			@phrase = phrase

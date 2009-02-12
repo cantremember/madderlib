@@ -38,9 +38,12 @@ conditional
 	only_unless(id) { block }
 		execute conditionals before weights
 =end
+!!!
 	repeating(Range, :times) { block }
+!!!
 	likely, weigted(int) { block }
 		raise if not or
+!!!
 	assuming, presuming
 		Voter
 		Vote
@@ -49,16 +52,16 @@ conditional
 anytime
 	assume:  once, anywhere
 	...
-	repeating(Range, :times) { block }
 	after(id)
 	before(id)
 	between(id, id)
+!!!
+	repeating(Range, :times) { block }
 
 context
 	sequence
 	history of what's happened, in order
-
-reset + state
+	state
 
 
 
@@ -73,5 +76,3 @@ for anywhere
 	identify boundaries, none if missing
 	random position along distance
 	repeat; nothings are included
-
-

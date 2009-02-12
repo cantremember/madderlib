@@ -5,7 +5,7 @@
 module SentenceBuilder
 	class Builder
 		include Enumerable
-		
+
 		attr_reader :id, :phrases, :phrase_ids
 
 		def initialize(id=nil, &block)
@@ -32,14 +32,14 @@ module SentenceBuilder
 		end
 		alias :extend :append
 
-		
-		
+
+
 		#	the current phrase
 		def phrase
 			@phrases.last
 		end
 		alias :it :phrase
-		
+
 		#	another phrase, id is optional
 		def and_then(id=nil)
 			add_id id
@@ -49,7 +49,7 @@ module SentenceBuilder
 		alias :and :and_then
 		alias :then :and_then
 		alias :also :and_then
-		
+
 		#	another phrase, id is required
 		#	for semantic sugar
 		def an(id)
@@ -57,8 +57,8 @@ module SentenceBuilder
 		end
 		alias :a :an
 		alias :new :an
-		
-		
+
+
 
 		def first(id=nil)
 			ordered and_then(id), :first
@@ -97,29 +97,38 @@ module SentenceBuilder
 		end
 		alias :says :say
 
-		def alternately
+		def alternately(*args, &block)
 			#	shorthand for 'or say...'
 			#	really, it's syntactic sugar
 			raise Error, "there is no active phrase.  start one with 'say'" unless self.phrase
-			self.phrase
+			self.phrase.or *args, &block
 		end
 		alias :or :alternately
 
 
 
+		def each_word
+			#	from our words
+			self.to_words.each {|word| yield word }
+		end
+		alias :each :each_word
+
+		#	returns the raw contents of the sequencer
 		def to_gen
 			Generator.new(self.to_sequencer)
 		end
 		alias :validate :to_gen
 
-		def to_a
+		#	returns the words from the sequencer
+		def to_words
 			a, g = [], self.to_gen
 			a << g.next while g.next?
 			a
 		end
+		alias :to_a :to_words
 
 		def to_s(separator=' ')
-			self.to_a.join(separator)
+			self.to_words.join(separator)
 		end
 
 
@@ -180,12 +189,12 @@ module SentenceBuilder
 					when :anytime
 						#	guarantee valid references
 						phrase = o.phrase
-						
+
 						[phrase.before, phrase.after].each do |ref|
 							raise Error, "no such phrase : #{ref.inspect}" unless (!ref) || map[ref]
 						end
 						anytimes << phrase
-						
+
 					else
 						raise Error, "unknown ordering : #{o.type.inspect}"
 				end

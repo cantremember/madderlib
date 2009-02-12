@@ -28,17 +28,9 @@ module SentenceBuilder
 		end
 
 
-		#	returns each phrase in the sequence
-		def each
-			###Enumerator.new(list)
-			###Enumerator.new(list, :items)
-			#	gawd, that's all wrong...
-			#	you have to implement the block traversal
-			self.sequence.each {|node| yield node.phrase }
-		end
 
 		#	returns each word in the sequence
-		def items
+		def words
 			#	yes, we do cache at this level
 			#	it's publicly exposed
 			unless @items
@@ -50,7 +42,18 @@ module SentenceBuilder
 
 			@items
 		end
-		alias :words :items
+		alias :items :words
+
+		#	iterates over each word in the sequence
+		def each_word
+			self.words.each {|word| yield word }
+		end
+		alias :each :each_word
+
+		#	returns each phrase in the sequence
+		def each_phrase
+			self.sequence.each {|node| yield node.phrase }
+		end
 
 
 

@@ -10,6 +10,8 @@
 #	internal, and in the proper sequence
 %w{
 	sentence_builder/core
+	sentence_builder/conditional/pattern
+	sentence_builder/conditional/closure
 	sentence_builder/extensions
 	sentence_builder/builder
 	sentence_builder/sequencer

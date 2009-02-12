@@ -61,7 +61,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 		sequencer.should have(3).steps
 
 		ids = []
-		sequencer.each do |phrase|
+		sequencer.each_phrase do |phrase|
 			phrase.should have(1).instructions
 			words = phrase.instructions.last.words
 			words.should have(1).items
@@ -82,7 +82,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 		sequencer.should have(3).steps
 
 		ids = []
-		sequencer.each do |phrase|
+		sequencer.each_phrase do |phrase|
 			phrase.should have(1).instructions
 			words = phrase.instructions.last.words
 			words.should have(1).items

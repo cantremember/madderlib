@@ -34,6 +34,12 @@ module SentenceBuilder
 		send :public, :traverse
 	end
 
+	class Phrase
+		class << self
+			send :public, :wordify
+		end
+	end
+
 	class AnytimePhrase
 		attr_reader :repeat_logic
 	end

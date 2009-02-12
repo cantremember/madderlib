@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 
 
 
-describe SentenceBuilder::Builder, "to Sequencer" do
+describe SentenceBuilder::Sequencer do
 	def pound_on
 		#	that'll be enough
 		100.times { yield }
@@ -15,7 +15,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 			say :hello
 		end).to_sequencer
 
-		sequencer.items.should eql([:hello])
+		sequencer.items.should eql(%w{ hello })
 	end
 
 	it "handles multiple says" do
@@ -29,9 +29,9 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 			also.says :end
 		end).to_sequencer
 
-		sequencer.items.should eql([
-			:cover, :contents, :beginning, :middle, :end
-		])
+		sequencer.items.should eql(%w{
+			cover contents beginning middle end
+		})
 	end
 
 
@@ -43,7 +43,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 			before(:ref).say :before
 		end).to_sequencer
 
-		sequencer.items.should eql([:before, :ref])
+		sequencer.items.should eql(%w{ before ref })
 
 		#	multiple instances, multiple words
 		sequencer = (sentence_builder :flat_multiple_before do
@@ -52,7 +52,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 			before(:ref).say :a
 		end).to_sequencer
 
-		sequencer.items.should eql([:a, :b, :c, :ref])
+		sequencer.items.should eql(%w{ a b c ref })
 	end
 
 	it "handles flat after sequencing" do
@@ -62,7 +62,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 			after(:ref).say :after
 		end).to_sequencer
 
-		sequencer.items.should eql([:ref, :after])
+		sequencer.items.should eql(%w{ ref after })
 
 		#	multiple instances, multiple words
 		sequencer = (sentence_builder :flat_multiple_after do
@@ -71,7 +71,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 			after(:ref).say :z
 		end).to_sequencer
 
-		sequencer.items.should eql([:ref, :x, :y, :z])
+		sequencer.items.should eql(%w{ ref x y z })
 	end
 
 
@@ -84,7 +84,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 			before(:inner).say :outer
 		end).to_sequencer
 
-		sequencer.items.should eql([:outer, :inner, :ref])
+		sequencer.items.should eql(%w{ outer inner ref })
 
 		#	multiple instances, multiple words
 		sequencer = (sentence_builder :nested_multiple_before do
@@ -99,7 +99,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 			before(:ref).say :a
 		end).to_sequencer
 
-		sequencer.items.should eql([:a, :b1, :b2, :c, :d, :e1, :e2, :f, :ref])
+		sequencer.items.should eql(%w{ a b1 b2 c d e1 e2 f ref })
 	end
 
 	it "handles nested after sequencing" do
@@ -110,7 +110,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 			after(:ref, :inner).say :inner
 		end).to_sequencer
 
-		sequencer.items.should eql([:ref, :inner, :outer])
+		sequencer.items.should eql(%w{ ref inner outer })
 
 		#	multiple instances, multiple words
 		sequencer = (sentence_builder :nested_multiple_before do
@@ -125,7 +125,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 			after(:ref).say :z
 		end).to_sequencer
 
-		sequencer.items.should eql([:ref, :u, :v1, :v2, :w, :x, :y1, :y2, :z])
+		sequencer.items.should eql(%w{ ref u v1 v2 w x y1 y2 z })
 	end
 
 
@@ -163,11 +163,11 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 			after(:ref).say :z
 		end).to_sequencer
 
-		sequencer.items.should eql([
-			:a, :b, :c, :d, :e, :f, :g, :h, :i,
-			:ref,
-			:r, :s, :t, :u, :v, :w, :x, :y, :z,
-		])
+		sequencer.items.should eql(%w{
+			a b c d e f g h i
+			ref
+			r s t u v w x y z
+		})
 	end
 
 
@@ -177,7 +177,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 			anytime.say :anything
 		end).to_sequencer
 
-		sequencer.items.should eql([:anything])
+		sequencer.items.should eql(%w{ anything })
 	end
 
 	it "handles simple anytimes" do
@@ -187,7 +187,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 			anytime.say :anything
 		end).to_sequencer
 
-		sequencer.items.should eql([:something, :anything])
+		sequencer.items.should eql(%w{ something anything })
 
 		#	only one place to go
 		#		because it won't start or end the sequence
@@ -200,7 +200,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 		pound_on do
 			#	a sequencer caches its items
 			items = builder.to_sequencer.items
-			items.should eql([:one, :gotcha, :two])
+			items.should eql(%w{ one gotcha two })
 		end
 	end
 
@@ -216,7 +216,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 		pound_on do
 			#	a sequencer caches its items
 			items = builder.to_sequencer.items
-			items.should eql([:one, :two])
+			items.should eql(%w{ one two })
 		end
 
 		#	only one place
@@ -230,7 +230,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 		pound_on do
 			#	a sequencer caches its items
 			items = builder.to_sequencer.items
-			items.should eql([:one, :two, :gotcha, :three])
+			items.should eql(%w{ one two gotcha three })
 		end
 	end
 
@@ -246,7 +246,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 		pound_on do
 			#	a sequencer caches its items
 			items = builder.to_sequencer.items
-			items.should eql([:one, :two])
+			items.should eql(%w{ one two })
 		end
 
 		#	only one place
@@ -260,7 +260,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 		pound_on do
 			#	a sequencer caches its items
 			items = builder.to_sequencer.items
-			items.should eql([:one, :gotcha, :two, :three])
+			items.should eql(%w{ one gotcha two three })
 		end
 	end
 
@@ -290,7 +290,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 		pound_on do
 			#	a sequencer caches its items
 			items = builder.to_sequencer.items
-			items.should eql([:one])
+			items.should eql(%w{ one })
 		end
 
 		#	one place only
@@ -305,7 +305,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 		pound_on do
 			#	a sequencer caches its items
 			items = builder.to_sequencer.items
-			items.should eql([:one, :two, :gotcha, :three, :four])
+			items.should eql(%w{ one two gotcha three four })
 		end
 
 		#	a small range
@@ -320,12 +320,12 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 			#	a sequencer caches its items
 			items = builder.to_sequencer.items
 
-			items.shift.should equal(:one)
-			items.pop.should equal(:three)
+			items.shift.should eql('one')
+			items.pop.should eql('three')
 
-			items.index(:gotcha).should_not be_nil
-			items.delete :gotcha
-			items.should eql([:two])
+			items.index('gotcha').should_not be_nil
+			items.delete 'gotcha'
+			items.should eql(%w{ two })
 		end
 	end
 end
