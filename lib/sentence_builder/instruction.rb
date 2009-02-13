@@ -45,13 +45,18 @@ module SentenceBuilder
 		protected
 
 		class << self
-			def wordify(word, context)
-				if (Proc === word)
+			def wordify(source, context)
+				#	our own dogfood
+				return source.to_words if Builder === source
+
+				if (Proc === source)
 					#	evaluate
-					word = Context.invoke(word, context)
+					source = Context.invoke(source, context)
+				elsif (Builder === source)
+					source = source
 				end
 
-				(String === word ? word : word.to_s)
+				(String === source ? source : source.to_s)
 			end
 		end
 	end

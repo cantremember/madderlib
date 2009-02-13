@@ -11,9 +11,9 @@ require File.join(File.dirname(__FILE__), '..', 'lib', 'sentence_builder')
 
 
 module Spec::DSL::Main
-	def pound_on
+	def pound_on(count=100)
 		#	that'll be enough
-		100.times { yield }
+		count.times { yield }
 	end
 end
 

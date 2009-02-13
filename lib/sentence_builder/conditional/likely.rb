@@ -8,7 +8,7 @@ module SentenceBuilder
 					#	before each run, we need to prepare ourself
 					target.add_prepare do |phrase, context|
 						#	no point in likelihood when there's only one choice
-						unless phrase.instructions.size > 2
+						unless phrase.instructions.size < 2
 							weights = []
 							phrase.instructions.each do |instruction|
 								#	put on a default weight if no other option
@@ -20,6 +20,7 @@ module SentenceBuilder
 								raise Error, 'invalid weight for instruction : #{instruction.words}' unless weight
 								weights << weight
 							end
+#debugger if phrase.builder.id == :split_3_2_1
 
 							#	easy distributions
 							total = 0
@@ -47,6 +48,7 @@ module SentenceBuilder
 				end
 				alias :weight :likely
 				alias :weighted :likely
+				alias :weighing :likely
 			end
 
 

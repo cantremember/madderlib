@@ -24,7 +24,7 @@ module SentenceBuilder
 			if @or_likely
 				#	retro-apply the likelihood from the 'or' operation
 				args, block = @or_likely
-				#!!!	self.instruction.likely *args, &block
+				self.instruction.likely *args, &block unless (args.empty? && block.nil?)
 				@or_likely = nil
 			end
 
@@ -32,11 +32,12 @@ module SentenceBuilder
 		end
 		alias :says :say
 
-		def or(*args, &block)
+		def alternately(*args, &block)
 			#	hold onto these until we say something
 			@or_likely = [args, block]
 			self
 		end
+		alias :or :alternately
 
 		def nothing
 			#	say nothing

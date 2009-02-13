@@ -43,6 +43,7 @@ module SentenceBuilder
 							raise e
 						rescue Exception => e
 							#	wrap
+							raise e
 							raise Error.new("invalid test block argument : #{arg.inspect}", e)
 						end
 
