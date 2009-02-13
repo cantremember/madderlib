@@ -20,10 +20,10 @@ module SentenceBuilder
 
 			module Instruction
 				def self.included(target)
-					#	register a test to test all allowances for the instance
+					#	register a test to test all allowances for the instruction
 					#		return false at the first one that fails
-					target.add_test do |instance, context|
-						failure = instance.conditional_allowances.find do |block|
+					target.add_test do |instruction, context|
+						failure = instruction.conditional_allowances.find do |block|
 							#	first failure stops us
 							(! Context.invoke(block, context))
 						end

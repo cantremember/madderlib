@@ -31,4 +31,6 @@ module SentenceBuilder
 			end
 		end
 	end
+
+	Context::EMPTY = Context.new(nil)
 end

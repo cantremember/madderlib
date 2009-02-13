@@ -41,7 +41,7 @@ conditional
 	...
 	repeating(Range, :times) { block }
 	...
-	likely, weigted(int) { block }
+	likely, weighted(int) { block }
 		raise if not or
 
 anytime

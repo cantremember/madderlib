@@ -47,7 +47,7 @@ describe SentenceBuilder::Conditional::Registry do
 		instance.instructions << SentenceBuilder::Spec::Instruction.new
 		instance.instructions.should have(2).instructions
 
-		instance.prepare(nil)
+		instance.prepare(SentenceBuilder::Context::EMPTY)
 
 		hits.should eql([
 			:phrase_bare, :phrase_context,
@@ -57,6 +57,7 @@ describe SentenceBuilder::Conditional::Registry do
 	end
 
 	it "accumulates test preprations" do
+		context = SentenceBuilder::Context::EMPTY
 		hits = []
 		barely, contextual = true, true
 
@@ -73,21 +74,21 @@ describe SentenceBuilder::Conditional::Registry do
 		#	all clear
 		hits.clear
 		instance = SentenceBuilder::Spec::Instruction.new
-		instance.test(nil).should be_true
+		instance.test(context).should be_true
 		hits.should eql([:instruction_bare, :instruction_context])
 
 		#	bare terminate
 		hits.clear
 		barely = false
 		instance = SentenceBuilder::Spec::Instruction.new
-		instance.test(nil).should be_false
+		instance.test(context).should be_false
 		hits.should eql([:instruction_bare])
 
 		#	contextual terminate
 		hits.clear
 		barely, contextual = true, false
 		instance = SentenceBuilder::Spec::Instruction.new
-		instance.test(nil).should be_false
+		instance.test(context).should be_false
 		hits.should eql([:instruction_bare, :instruction_context])
 	end
 end

@@ -72,6 +72,7 @@ module SentenceBuilder
 
 		include Conditional::Allowed::Phrase
 		include Conditional::Repeat::Phrase
+		include Conditional::Likely::Phrase
 	end
 
 

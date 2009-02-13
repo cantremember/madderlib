@@ -39,6 +39,7 @@ module SentenceBuilder
 		include Conditional::Allowed::Instruction
 		include Conditional::Repeat::Instruction
 		include Conditional::Recur::Instruction
+		include Conditional::Likely::Instruction
 
 		#	- - - - -
 		protected

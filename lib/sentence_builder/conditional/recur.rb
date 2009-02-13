@@ -5,23 +5,23 @@ module SentenceBuilder
 			module Phrase
 				def self.included(target)
 					#	before each run, we need to prepare ourself
-					target.add_prepare do |instance, context|
-						unless instance.conditional_recur_tester
+					target.add_prepare do |phrase, context|
+						unless phrase.conditional_recur_tester
 							#	we'll only run once if not told otherwise
-							instance.recur 1
+							phrase.recur 1
 						end
 
 						#	we must retain state (the number of times called)
 						#	and a consistent block for testing
-						state = context.state(instance)
-						state[:recur_block] = instance.conditional_recur_tester.block
+						state = context.state(phrase)
+						state[:recur_block] = phrase.conditional_recur_tester.block
 						state[:recur_count] = 0
 					end
 
 					#	register a test for recurrance
-					target.add_test do |instance, context|
+					target.add_test do |phrase, context|
 						#	where we at now
-						state = context.state(instance)
+						state = context.state(phrase)
 						block = state[:recur_block]
 						count = state[:recur_count]
 						state[:recur_count] = count + 1
@@ -42,11 +42,15 @@ module SentenceBuilder
 
 				def recur(*args, &block)
 					#	build a tester, set it aside
-					@recur_tester = Helper::CountTester.new *args, &block
+					@recur_tester = Helper::TestBlock.new *args, &block
 					self
 				end
 				alias :recurs :recur
 				alias :recurring :recur
+
+				def recurs?(context=SentenceBuilder::Context::EMPTY)
+					!! (conditional_recur_tester && (conditional_recur_tester.to_i(context) > 1))
+				end
 
 
 

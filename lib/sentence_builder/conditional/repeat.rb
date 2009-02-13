@@ -63,7 +63,7 @@ module SentenceBuilder
 
 				def repeat(*args, &block)
 					#	build a tester, set it aside
-					@repeat_tester = Helper::CountTester.new *args, &block
+					@repeat_tester = Helper::TestBlock.new *args, &block
 					self
 				end
 				alias :repeats :repeat

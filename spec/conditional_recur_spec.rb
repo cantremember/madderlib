@@ -12,6 +12,10 @@ describe SentenceBuilder::Conditional::Recur do
 			say(:end)
 		end
 
+		builder.phrases.each do |phrase|
+			phrase.recurs?.should be_false if phrase.respond_to?(:recurs?)
+		end
+
 		builder.to_words.should eql(%w{ start any end })
 	end
 
@@ -21,6 +25,10 @@ describe SentenceBuilder::Conditional::Recur do
 			say(:start)
 			anytime.recurring(2).say(:any)
 			say(:end)
+		end
+
+		builder.phrases.each do |phrase|
+			phrase.recurs?.should be_true if phrase.respond_to?(:recurs?)
 		end
 
 		builder.to_words.should eql(%w{ start any any end })

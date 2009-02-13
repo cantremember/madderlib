@@ -122,8 +122,6 @@ module SentenceBuilder
 				anytime.prepare(context)
 
 				loop do
-#debugger if builder.id == :blocked_after_anytimes
-
 					#	we don't want an anytime to end the sentence
 					#		consistent with not letting one start, which is implicit here
 					#		UNLESS it's an empty set of nodes

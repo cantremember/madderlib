@@ -16,6 +16,7 @@
 	sentence_builder/conditional/allowed
 	sentence_builder/conditional/repeat
 	sentence_builder/conditional/recur
+	sentence_builder/conditional/likely
 	sentence_builder/extensions
 	sentence_builder/instruction
 	sentence_builder/phrase
