@@ -81,6 +81,10 @@ module SentenceBuilder
 			#	we can flatten it immediately
 			result_nodes = []
 			steps.each do |phrase|
+				#	make sure it's prepared
+				phrase.prepare(context)
+
+				#	accumuluate its wisdom
 				result_nodes += traverse(phrase, context)
 			end
 
@@ -114,54 +118,59 @@ module SentenceBuilder
 			end
 
 			anytimes.each do |anytime|
-				#	we don't want an anytime to end the sentence
-				#		consistent with not letting one start, which is implicit here
-				#		UNLESS it's an empty set of nodes
-				before_index = false
-
-				to = result_size - 1
-				if anytime.before
-					#	expose this for subsequent checks
-					before_index = index_of.call(anytime.before)
-
-					#	you can't intentionally inject before the first item
-					#		it's not an error, it's just there's no room for anytime
-					if before_index
-						next if (before_index == 0)
-						to = before_index
-					end
-				end
-
-				#	can't start the sentence either
-				#		eg. can't insert before 0
-				from = 0
-				if anytime.after
-					index = index_of.call(anytime.after)
-
-					#	you can't intentionally inject after the last item
-					#		it's not an error, it's just there's no room for anytime
-					if index
-						next if (index == (result_size - 1))
-						from = index
-					end
-
-					if to < from
-						#	you can't explicitly bound like that
-						raise Error, "bounding failure between #{anytime.after.inspect} and #{anytime.before.inspect}" if (index && before_index)
-
-						#	partially bounded conditions, that's different ...
-						#	handle special case: there's only one place to put the thing
-						from = to
-					end
-				end
+				#	make sure it's prepared
+				anytime.prepare(context)
 
 				loop do
-					these_nodes = traverse(anytime, context)
-					#	this would happen if:
+#debugger if builder.id == :blocked_after_anytimes
+
+					#	we don't want an anytime to end the sentence
+					#		consistent with not letting one start, which is implicit here
+					#		UNLESS it's an empty set of nodes
+					before_index = false
+
+					to = result_size - 1
+					if anytime.before
+						#	expose this for subsequent checks
+						before_index = index_of.call(anytime.before)
+
+						#	you can't intentionally inject before the first item
+						#		it's not an error, it's just there's no room for anytime
+						if before_index
+							break if (before_index == 0)
+							to = before_index
+						end
+					end
+
+					#	can't start the sentence either
+					#		eg. can't insert before 0
+					from = 0
+					if anytime.after
+						index = index_of.call(anytime.after)
+
+						#	you can't intentionally inject after the last item
+						#		it's not an error, it's just there's no room for anytime
+						if index
+							break if (index == (result_size - 1))
+							from = index
+						end
+
+						if to < from
+							#	you can't explicitly bound like that
+							raise Error, "bounding failure between #{anytime.after.inspect} and #{anytime.before.inspect}" if (index && before_index)
+
+							#	partially bounded conditions, that's different ...
+							#	handle special case: there's only one place to put the thing
+							from = to
+						end
+					end
+
+					#	we'd get nothing if
 					#		the anytime is exhauseted
 					#		it conditionally returned nothing
 					#		both of those are treated as exit conditions
 					#		if you don'w want conditional nothings, don't permit them
+					these_nodes = traverse(anytime, context)
 					break if these_nodes.empty?
 
 					#	TODO:
@@ -304,41 +313,6 @@ module SentenceBuilder
 			#	the nodes we return are *not* linked together
 			#	just an array
 			result_nodes
-		end
-	end
-
-
-
-	class Context
-		attr_reader :sequencer
-		attr_reader :spoken
-		attr_reader :silent
-		attr_reader :spoken_ids
-		attr_reader :data
-
-		def initialize(sequencer)
-			@sequencer = sequencer
-			@spoken, @silent, @spoken_ids = [], [], []
-			@state, @data = {}, {}
-		end
-
-		def state(key)
-			hash = @state[key]
-			@state[key] = hash = {} unless hash
-			hash
-		end
-
-
-
-		class << self
-			def validate(block)
-				raise Error, 'block required' unless block
-				raise Error, 'block arity should be 0 or 1 (Context)' unless (block.arity < 2)
-			end
-
-			def invoke(block, context)
-				(block.arity == 0 ? block.call : block.call(context))
-			end
 		end
 	end
 end

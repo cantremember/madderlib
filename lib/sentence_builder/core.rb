@@ -58,6 +58,9 @@ module SentenceBuilder
 		def initialize
 			@builders = []
 			@builder_map = {}
+
+			#	randomness
+			srand(Time.now.to_i)
 		end
 
 		def add(builder)

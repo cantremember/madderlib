@@ -10,11 +10,14 @@
 #	internal, and in the proper sequence
 %w{
 	sentence_builder/core
+	sentence_builder/context
 	sentence_builder/conditional/helper
 	sentence_builder/conditional/registry
 	sentence_builder/conditional/allowed
 	sentence_builder/conditional/repeat
+	sentence_builder/conditional/recur
 	sentence_builder/extensions
+	sentence_builder/instruction
 	sentence_builder/phrase
 	sentence_builder/sequencer
 	sentence_builder/builder

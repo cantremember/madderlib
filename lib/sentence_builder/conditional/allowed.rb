@@ -20,10 +20,10 @@ module SentenceBuilder
 
 			module Instruction
 				def self.included(target)
-					#	register a test to test all closures for the instance
+					#	register a test to test all allowances for the instance
 					#		return false at the first one that fails
 					target.add_test do |instance, context|
-						failure = instance.conditional_closures.find do |block|
+						failure = instance.conditional_allowances.find do |block|
 							#	first failure stops us
 							(! Context.invoke(block, context))
 						end
@@ -31,6 +31,7 @@ module SentenceBuilder
 						failure.nil?
 					end
 				end
+
 
 
 				#	expects that the block will return true for successful test
@@ -45,7 +46,7 @@ module SentenceBuilder
 					end
 
 					#	set it aside for a lazy day
-					conditional_closures << block
+					conditional_allowances << block
 					self
 				end
 				alias :presuming :assuming
@@ -68,8 +69,8 @@ module SentenceBuilder
 
 
 
-				def conditional_closures
-					@conditional_closures ||= []
+				def conditional_allowances
+					@conditional_allowances ||= []
 				end
 			end
 

@@ -23,6 +23,15 @@ describe SentenceBuilder::Conditional::Repeat do
 		builder.to_words.should eql(%w{ once twice twice thrice thrice thrice })
 	end
 
+	it "supports a 0-repeat, which blocks the instruction" do
+		builder = sentence_builder do
+			say(:one)
+			say(:two).times(0)
+		end
+
+		builder.to_words.should eql(%w{ one })
+	end
+
 	it "supports Ranged repeating" do
 		builder = sentence_builder do
 			say(:once)
@@ -31,9 +40,8 @@ describe SentenceBuilder::Conditional::Repeat do
 		end
 
 		pound_on do
-			#	a sequencer caches its items
-			words = builder.to_sequencer.words
-			words.shift.should eql('once')
+			words = builder.to_words
+			words.shift.should eql('once')
 
 			repeat = []
 			repeat << words.shift while words.first == 'few'
@@ -56,6 +64,9 @@ describe SentenceBuilder::Conditional::Repeat do
 		end
 
 		builder.to_words.should eql(%w{ intro fred barney wilma betty })
+
+		#	the next pass should be exhausted
+		builder.to_words.should eql(%w{ intro })
 	end
 
 end

@@ -5,7 +5,6 @@ module SentenceBuilder
 			module Static
 				#	registers a preparation closure for the container
 				def add_prepare(&block)
-					Context.validate(block)
 					conditional_prepares << block
 				end
 
@@ -31,7 +30,7 @@ module SentenceBuilder
 				def prepare(context)
 					#	execute all of our registered preparation blocks
 					self.class.conditional_prepares.each do |block|
-						Context.invoke(block, context)
+						(block.arity == 1 ? block.call(self) : block.call(self, context))
 					end
 
 					if self.methods.include?('instructions')
