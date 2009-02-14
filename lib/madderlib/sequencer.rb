@@ -32,7 +32,7 @@ module MadderLib
 		def words
 			#	composite the words
 			#		each node contains an array of words
-			self.sequence.collect {|node| node.words }.flatten
+			sequence.collect {|node| node.words }.flatten
 		end
 
 		#	iterates over each word in the sequence
@@ -109,7 +109,7 @@ module MadderLib
 				found
 			end
 
-			anytimes.each do |anytime|
+			@anytime.each do |anytime|
 				#	make sure it's prepared
 				anytime.prepare(context)
 

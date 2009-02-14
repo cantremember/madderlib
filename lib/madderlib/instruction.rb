@@ -23,6 +23,14 @@ module MadderLib
 
 
 
+		def alternately(*args, &block)
+			#	proxy to the phrase
+			self.phrase.or *args, &block
+		end
+		alias :or :alternately
+
+
+
 		def speak(context)
 			#	immediately wordify everything
 			#		immediate evaluation allows for more custom operations

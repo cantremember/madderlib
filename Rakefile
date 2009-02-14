@@ -115,7 +115,7 @@ CLEAN.include 'doc/index.html'
 file 'madderlib.gemspec' => FileList['{lib,spec}/**','Rakefile'] do |f|
 	# read spec file and split out manifest section
 	spec = File.read(f.name)
-	parts = spec.split("  # = MANIFEST =\n")
+	parts = spec.split("	# = MANIFEST =\n")
 	fail 'bad spec' if parts.length != 3
 	# determine file list from git ls-files
 	files = `git ls-files`.
