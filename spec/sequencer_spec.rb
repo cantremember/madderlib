@@ -2,12 +2,12 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 
 
 
-describe SentenceBuilder::Sequencer do
+describe MadderLib::Sequencer do
 
 	it "supports setup and teardown blocks" do
 		holder = [:setup]
 
-		sequencer = (sentence_builder do
+		sequencer = (madderlib do
 			#	takes context, uses data, get and set local scope
 			setup {|context| context.data[:word] = holder.pop }
 
@@ -26,7 +26,7 @@ describe SentenceBuilder::Sequencer do
 
 
 	it "handles a single say" do
-		sequencer = (sentence_builder :single_say do
+		sequencer = (madderlib :single_say do
 			say :hello
 		end).to_sequencer
 
@@ -34,7 +34,7 @@ describe SentenceBuilder::Sequencer do
 	end
 
 	it "handles multiple says" do
-		sequencer = (sentence_builder :multiple_say do
+		sequencer = (madderlib :multiple_say do
 			#	all in sequence
 			#		multiple words per phrase
 			#		a few syntactical varieties
@@ -53,7 +53,7 @@ describe SentenceBuilder::Sequencer do
 
 	it "handles flat before sequencing" do
 		#	one instance, single word
-		sequencer = (sentence_builder :flat_single_before do
+		sequencer = (madderlib :flat_single_before do
 			a(:ref).says :ref
 			before(:ref).say :before
 		end).to_sequencer
@@ -61,7 +61,7 @@ describe SentenceBuilder::Sequencer do
 		sequencer.words.should eql(%w{ before ref })
 
 		#	multiple instances, multiple words
-		sequencer = (sentence_builder :flat_multiple_before do
+		sequencer = (madderlib :flat_multiple_before do
 			before(:ref).say :b, :c
 			a(:ref).says(:ref)
 			before(:ref).say :a
@@ -72,7 +72,7 @@ describe SentenceBuilder::Sequencer do
 
 	it "handles flat after sequencing" do
 		#	one instance, single word
-		sequencer = (sentence_builder :flat_single_after do
+		sequencer = (madderlib :flat_single_after do
 			a(:ref).says :ref
 			after(:ref).say :after
 		end).to_sequencer
@@ -80,7 +80,7 @@ describe SentenceBuilder::Sequencer do
 		sequencer.words.should eql(%w{ ref after })
 
 		#	multiple instances, multiple words
-		sequencer = (sentence_builder :flat_multiple_after do
+		sequencer = (madderlib :flat_multiple_after do
 			after(:ref).say :x, :y
 			a(:ref).says(:ref)
 			after(:ref).say :z
@@ -93,7 +93,7 @@ describe SentenceBuilder::Sequencer do
 
 	it "handles nested before sequencing" do
 		#	one instance, single word
-		sequencer = (sentence_builder :nested_single_before do
+		sequencer = (madderlib :nested_single_before do
 			a(:ref).says :ref
 			before(:ref, :inner).say :inner
 			before(:inner).say :outer
@@ -102,7 +102,7 @@ describe SentenceBuilder::Sequencer do
 		sequencer.words.should eql(%w{ outer inner ref })
 
 		#	multiple instances, multiple words
-		sequencer = (sentence_builder :nested_multiple_before do
+		sequencer = (madderlib :nested_multiple_before do
 			# visually:
 			#	[ :a [ :b [:c :d ] :e ] :f :ref ]
 			before(:ref).say :f
@@ -119,7 +119,7 @@ describe SentenceBuilder::Sequencer do
 
 	it "handles nested after sequencing" do
 		#	one instance, single word
-		sequencer = (sentence_builder :nested_single_before do
+		sequencer = (madderlib :nested_single_before do
 			a(:ref).says :ref
 			after(:inner).say :outer
 			after(:ref, :inner).say :inner
@@ -128,7 +128,7 @@ describe SentenceBuilder::Sequencer do
 		sequencer.words.should eql(%w{ ref inner outer })
 
 		#	multiple instances, multiple words
-		sequencer = (sentence_builder :nested_multiple_before do
+		sequencer = (madderlib :nested_multiple_before do
 			# visually:
 			#	[ :ref :u [ :v [ :w :x ] :y ] :z ]
 			after(:ref).say :u
@@ -146,7 +146,7 @@ describe SentenceBuilder::Sequencer do
 
 
 	it "handles complex nested sequencing" do
-		sequencer = (sentence_builder :nested_complex do
+		sequencer = (madderlib :nested_complex do
 			# visually:
 			#	[ :a [ [ :b :c [ :d :e ] ] :f [ :g :h ] :i ] :ref [ :r [ :s :t ] :u [ [ :v :w ] :x :y ] ] :z ]
 			#		as if that helps
@@ -188,7 +188,7 @@ describe SentenceBuilder::Sequencer do
 
 
 	it "handles anytimes, without anything else" do
-		sequencer = (sentence_builder :empty_anytimes do
+		sequencer = (madderlib :empty_anytimes do
 			anytime.say :anything
 		end).to_sequencer
 
@@ -197,7 +197,7 @@ describe SentenceBuilder::Sequencer do
 
 	it "handles simple anytimes" do
 		#	will always occur at the end (no other option)
-		sequencer = (sentence_builder :single_anytimes do
+		sequencer = (madderlib :single_anytimes do
 			say :something
 			anytime.say :anything
 		end).to_sequencer
@@ -206,7 +206,7 @@ describe SentenceBuilder::Sequencer do
 
 		#	only one place to go
 		#		because it won't start or end the sequence
-		builder = sentence_builder :multiple_anytimes do
+		builder = madderlib :multiple_anytimes do
 			say :one
 			say :two
 			anytime.say :gotcha
@@ -221,7 +221,7 @@ describe SentenceBuilder::Sequencer do
 	it "handles after-positional anytimes" do
 		#	nowhere to go
 		#		but will NOT end the sequence
-		builder = sentence_builder :blocked_after_anytimes do
+		builder = madderlib :blocked_after_anytimes do
 			say :one
 			a(:lower).says :two
 			anytime.after(:lower).say :gotcha
@@ -233,7 +233,7 @@ describe SentenceBuilder::Sequencer do
 		end
 
 		#	only one place
-		builder = sentence_builder :simple_after_anytimes do
+		builder = madderlib :simple_after_anytimes do
 			say :one
 			a(:lower).says :two
 			say :three
@@ -249,7 +249,7 @@ describe SentenceBuilder::Sequencer do
 	it "handles before-positional anytimes" do
 		#	nowhere to go
 		#		because it will NOT start the sequence
-		builder = sentence_builder :blocked_before_anytimes do
+		builder = madderlib :blocked_before_anytimes do
 			an(:upper).says :one
 			say :two
 			anytime.before(:upper).say :gotcha
@@ -261,7 +261,7 @@ describe SentenceBuilder::Sequencer do
 		end
 
 		#	only one place
-		builder = sentence_builder :simple_before_anytimes do
+		builder = madderlib :simple_before_anytimes do
 			say :one
 			an(:upper).says :two
 			say :three
@@ -276,7 +276,7 @@ describe SentenceBuilder::Sequencer do
 
 	it "doesn't tolerate invalid bounding conditions" do
 		(lambda do
-			(builder = sentence_builder :between_exception_anytimes do
+			(builder = madderlib :between_exception_anytimes do
 				#	before > after ... never works
 				#		assume that before and after aren't first or last, respectively
 				#		those are tolerated no-op conditions
@@ -286,13 +286,13 @@ describe SentenceBuilder::Sequencer do
 				say :four
 				anytime.between(:second, :first).say :never
 			end).to_sequencer.words
-		end).should raise_error SentenceBuilder::Error
+		end).should raise_error MadderLib::Error
 	end
 
 	it "handles bounded anytimes" do
 		#	nowhere to go
 		#		this IS a valid (though stupid) bounding condition
-		builder = sentence_builder :bounded_nowhere_anytimes do
+		builder = madderlib :bounded_nowhere_anytimes do
 			a(:phrase).says :one
 			anytime.after(:phrase).before(:phrase).say :never
 		end
@@ -303,7 +303,7 @@ describe SentenceBuilder::Sequencer do
 		end
 
 		#	one place only
-		builder = sentence_builder :bounded_anytimes do
+		builder = madderlib :bounded_anytimes do
 			say :one
 			a(:lower).says :two
 			an(:upper).says :three
@@ -317,7 +317,7 @@ describe SentenceBuilder::Sequencer do
 		end
 
 		#	a small range
-		builder = sentence_builder :between_anytimes do
+		builder = madderlib :between_anytimes do
 			a(:lower).says :one
 			say :two
 			an(:upper).says :three

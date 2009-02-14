@@ -27,10 +27,10 @@ BENCHER = Bencher.new
 
 
 
-describe SentenceBuilder, "benchmarking" do
+describe MadderLib, "benchmarking" do
 
 	it "conditional logic" do
-		builder = sentence_builder :split_3_2_1 do
+		builder = madderlib :split_3_2_1 do
 			say('flopsy').or(2).say('mopsy').or(3).say('cottontail')
 			say('ate')
 			say('many').times(2, 4)

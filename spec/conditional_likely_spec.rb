@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 
 
 
-describe SentenceBuilder::Conditional::Likely do
+describe MadderLib::Conditional::Likely do
 	def distribution(words, map=nil)
 		map ||= {}
 		words.each do |word|
@@ -15,7 +15,7 @@ describe SentenceBuilder::Conditional::Likely do
 
 
 	it "by default has a 50/50 split" do
-		builder = sentence_builder do
+		builder = madderlib do
 			say 'buffalo'
 			it.alternately.says 'fish'
 		end
@@ -37,7 +37,7 @@ describe SentenceBuilder::Conditional::Likely do
 	end
 
 	it "supports nothing" do
-		builder = sentence_builder do
+		builder = madderlib do
 			say 'something nice'
 			alternately.nothing
 		end
@@ -60,7 +60,7 @@ describe SentenceBuilder::Conditional::Likely do
 
 	it "getting a 2/1 split" do
 		#	testing out various alias formats, etc
-		builder = sentence_builder :split_2_1 do
+		builder = madderlib :split_2_1 do
 			say 'buffalo'
 			it.alternately.says('fish').likely(2)
 		end
@@ -84,7 +84,7 @@ describe SentenceBuilder::Conditional::Likely do
 
 	it "getting a 3/1 split" do
 		#	testing out various alias formats, etcnext
-		builder = sentence_builder :split_3_1 do
+		builder = madderlib :split_3_1 do
 			say 'buffalo'
 			it.alternately.says('fish').weighing { 2 + 1 }
 		end
@@ -110,7 +110,7 @@ describe SentenceBuilder::Conditional::Likely do
 
 	it "getting a 3/2/1 split" do
 		#	testing out transferrence from 'or' operation to likelihood
-		builder = sentence_builder :split_3_2_1 do
+		builder = madderlib :split_3_2_1 do
 			say 'faith'
 			alternately(2).says('hope')
 			#	range is supported, but not recommended

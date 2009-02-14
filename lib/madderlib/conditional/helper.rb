@@ -1,4 +1,4 @@
-module SentenceBuilder
+module MadderLib
 	module Conditional
 		module Helper
 
@@ -78,7 +78,7 @@ module SentenceBuilder
 					value = nil
 
 					if Proc === @criteria
-						value = SentenceBuilder::Context.invoke(@criteria, context)
+						value = MadderLib::Context.invoke(@criteria, context)
 					elsif Range === @criteria
 						value = @criteria.max
 					elsif @criteria.integer?

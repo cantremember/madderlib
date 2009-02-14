@@ -2,10 +2,10 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 
 
 
-describe SentenceBuilder::Conditional::Recur do
+describe MadderLib::Conditional::Recur do
 
 	it "only occurs once if not told otherwise" do
-		builder = sentence_builder do
+		builder = madderlib do
 			#	give it boundaries
 			say(:start)
 			anytime.say(:any)
@@ -20,7 +20,7 @@ describe SentenceBuilder::Conditional::Recur do
 	end
 
 	it "supports simple recurrence" do
-		builder = sentence_builder do
+		builder = madderlib do
 			#	give it boundaries
 			say(:start)
 			anytime.recurring(2).say(:any)
@@ -35,7 +35,7 @@ describe SentenceBuilder::Conditional::Recur do
 	end
 
 	it "supports a 0-recurrence, which blocks the phrase" do
-		builder = sentence_builder do
+		builder = madderlib do
 			say(:start)
 			anytime.recur(0).say(:never)
 			say(:end)
@@ -45,7 +45,7 @@ describe SentenceBuilder::Conditional::Recur do
 	end
 
 	it "supports Ranged recurrence" do
-		builder = sentence_builder do
+		builder = madderlib do
 			#	give it boundaries
 			say(:start)
 			anytime.recurring(Range.new(3, 5)).say(:few)
@@ -73,7 +73,7 @@ describe SentenceBuilder::Conditional::Recur do
 		spices = [:parsley, :sage, :rosemary, :thyme]
 		shoulds = spices.clone
 
-		builder = sentence_builder :repeat_exhausting do
+		builder = madderlib :repeat_exhausting do
 			say(:start)
 			#	if these don't exist, positioning isn't random
 			#		it's just a visual confirmation from initial testing

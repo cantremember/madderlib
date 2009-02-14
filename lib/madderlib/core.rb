@@ -1,10 +1,10 @@
-module SentenceBuilder
+module MadderLib
 	#= Error
 	#
 	#A Module-specific Exception class
 	#
 	#--
-	# i would have called it SentenceBuilder::Exception
+	# i would have called it MadderLib::Exception
 	# except that i don't know how to access Kernel::Exception within the initialize logic
 	#++
 	class Error < Exception
@@ -28,14 +28,14 @@ module SentenceBuilder
 
 
 	module KernelMethods
-		def sentence_builder(*args, &block)
+		def madderlib(*args, &block)
 			builder = Builder.new *args
-			sentence_grammar.add builder
+			madderlib_grammar.add builder
 
 			builder.extend &block
 		end
 
-		def sentence_grammar
+		def madderlib_grammar
 			#	the current instance we're working with
 			Grammar.get_instance
 		end
@@ -83,4 +83,4 @@ end
 
 
 #	inject into the Kernel
-include SentenceBuilder::KernelMethods
+include MadderLib::KernelMethods

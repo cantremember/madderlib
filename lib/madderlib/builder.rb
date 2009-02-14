@@ -2,7 +2,7 @@
 
 
 
-module SentenceBuilder
+module MadderLib
 	class Builder
 		include Enumerable
 

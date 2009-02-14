@@ -2,12 +2,12 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 
 
 
-describe SentenceBuilder::Grammar do
+describe MadderLib::Grammar do
 	before(:all) do
-		@class = SentenceBuilder::Grammar
+		@class = MadderLib::Grammar
 
 		#	close any pre-existing grammar
-		sentence_grammar.close
+		madderlib_grammar.close
 	end
 
 
@@ -23,7 +23,7 @@ describe SentenceBuilder::Grammar do
 		grammar.builder_map.should have(0).builders
 
 		#	un-id'd
-		builder = SentenceBuilder::Builder.new
+		builder = MadderLib::Builder.new
 		grammar << builder
 
 		grammar.should have(1).builders
@@ -37,7 +37,7 @@ describe SentenceBuilder::Grammar do
 		grammar.builder_map.should have(0).builders
 
 		#	id'd
-		builder = SentenceBuilder::Builder.new(:named)
+		builder = MadderLib::Builder.new(:named)
 		grammar << builder
 
 		grammar.should have(2).builders

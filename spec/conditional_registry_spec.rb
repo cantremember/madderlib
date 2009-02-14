@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 
 
 
-module SentenceBuilder
+module MadderLib
 	module Spec
 		class Phrase
 			class << self
@@ -26,28 +26,28 @@ end
 
 
 
-describe SentenceBuilder::Conditional::Registry do
+describe MadderLib::Conditional::Registry do
 	it "accumulates phrase preprations" do
 		hits = []
 
 		#	how to prepare each instruction
-		SentenceBuilder::Spec::Instruction.add_prepare { hits << :instruction_bare }
-		SentenceBuilder::Spec::Instruction.add_prepare {|context| hits << :instruction_context }
+		MadderLib::Spec::Instruction.add_prepare { hits << :instruction_bare }
+		MadderLib::Spec::Instruction.add_prepare {|context| hits << :instruction_context }
 
 		#	how to prepare the phrase
-		SentenceBuilder::Spec::Phrase.add_prepare { hits << :phrase_bare }
-		SentenceBuilder::Spec::Phrase.add_prepare {|context| hits << :phrase_context }
+		MadderLib::Spec::Phrase.add_prepare { hits << :phrase_bare }
+		MadderLib::Spec::Phrase.add_prepare {|context| hits << :phrase_context }
 
 		#	just confirming ...
-		SentenceBuilder::Spec::Phrase.new.methods.include?('instructions').should be_true
+		MadderLib::Spec::Phrase.new.methods.include?('instructions').should be_true
 
 		#	add 2 instructions
-		instance = SentenceBuilder::Spec::Phrase.new
-		instance.instructions << SentenceBuilder::Spec::Instruction.new
-		instance.instructions << SentenceBuilder::Spec::Instruction.new
+		instance = MadderLib::Spec::Phrase.new
+		instance.instructions << MadderLib::Spec::Instruction.new
+		instance.instructions << MadderLib::Spec::Instruction.new
 		instance.instructions.should have(2).instructions
 
-		instance.prepare(SentenceBuilder::Context::EMPTY)
+		instance.prepare(MadderLib::Context::EMPTY)
 
 		hits.should eql([
 			:phrase_bare, :phrase_context,
@@ -57,37 +57,37 @@ describe SentenceBuilder::Conditional::Registry do
 	end
 
 	it "accumulates test preprations" do
-		context = SentenceBuilder::Context::EMPTY
+		context = MadderLib::Context::EMPTY
 		hits = []
 		barely, contextual = true, true
 
 		#	how to test each instruction
-		SentenceBuilder::Spec::Instruction.add_test do |instance|
+		MadderLib::Spec::Instruction.add_test do |instance|
 			hits << :instruction_bare
 			barely
 		end
-		SentenceBuilder::Spec::Instruction.add_test do |instance, context|
+		MadderLib::Spec::Instruction.add_test do |instance, context|
 			hits << :instruction_context
 			contextual
 		end
 
 		#	all clear
 		hits.clear
-		instance = SentenceBuilder::Spec::Instruction.new
+		instance = MadderLib::Spec::Instruction.new
 		instance.test(context).should be_true
 		hits.should eql([:instruction_bare, :instruction_context])
 
 		#	bare terminate
 		hits.clear
 		barely = false
-		instance = SentenceBuilder::Spec::Instruction.new
+		instance = MadderLib::Spec::Instruction.new
 		instance.test(context).should be_false
 		hits.should eql([:instruction_bare])
 
 		#	contextual terminate
 		hits.clear
 		barely, contextual = true, false
-		instance = SentenceBuilder::Spec::Instruction.new
+		instance = MadderLib::Spec::Instruction.new
 		instance.test(context).should be_false
 		hits.should eql([:instruction_bare, :instruction_context])
 	end

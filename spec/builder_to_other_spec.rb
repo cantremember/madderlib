@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 
 
 
-describe SentenceBuilder::Builder, "has component parts" do
+describe MadderLib::Builder, "has component parts" do
 	WORDS = %w{ one two three }
 
 
@@ -10,7 +10,7 @@ describe SentenceBuilder::Builder, "has component parts" do
 	it "is iterable" do
 		words = []
 
-		(sentence_builder do
+		(madderlib do
 			WORDS.each {|word| say word }
 		end).each do |word|
 			words << word
@@ -20,7 +20,7 @@ describe SentenceBuilder::Builder, "has component parts" do
 	end
 
 	it "converts to an Array" do
-		array = (sentence_builder do
+		array = (madderlib do
 			WORDS.each {|word| say word }
 		end).to_a
 
@@ -28,7 +28,7 @@ describe SentenceBuilder::Builder, "has component parts" do
 	end
 
 	it "converts to a String" do
-		s = (sentence_builder do
+		s = (madderlib do
 			WORDS.each {|word| say word }
 		end).to_s
 
@@ -37,7 +37,7 @@ describe SentenceBuilder::Builder, "has component parts" do
 	end
 
 	it "converts to a String, with separator" do
-		s = (sentence_builder do
+		s = (madderlib do
 			WORDS.each {|word| say word }
 		end).to_s("\t")
 

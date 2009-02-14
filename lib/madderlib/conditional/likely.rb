@@ -1,4 +1,4 @@
-module SentenceBuilder
+module MadderLib
 	module Conditional
 		module Likely
 			DEFAULT_WEIGHT = 1

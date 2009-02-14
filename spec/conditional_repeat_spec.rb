@@ -2,10 +2,10 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 
 
 
-describe SentenceBuilder::Conditional::Repeat do
+describe MadderLib::Conditional::Repeat do
 
 	it "no repeat = once" do
-		builder = sentence_builder do
+		builder = madderlib do
 			say(:one)
 			say(:two)
 		end
@@ -14,7 +14,7 @@ describe SentenceBuilder::Conditional::Repeat do
 	end
 
 	it "supports simple repeating" do
-		builder = sentence_builder do
+		builder = madderlib do
 			say(:once)
 			say(:twice).repeat(2)
 			say(:thrice).times(3)
@@ -24,7 +24,7 @@ describe SentenceBuilder::Conditional::Repeat do
 	end
 
 	it "supports a 0-repeat, which blocks the instruction" do
-		builder = sentence_builder do
+		builder = madderlib do
 			say(:one)
 			say(:two).times(0)
 		end
@@ -33,7 +33,7 @@ describe SentenceBuilder::Conditional::Repeat do
 	end
 
 	it "supports Ranged repeating" do
-		builder = sentence_builder do
+		builder = madderlib do
 			say(:once)
 			say(:few).repeat(Range.new(3, 5))
 			say(:couple).times(3, 5)
@@ -57,7 +57,7 @@ describe SentenceBuilder::Conditional::Repeat do
 		men = [:fred, :barney]
 		women = [:wilma, :betty]
 
-		builder = sentence_builder :repeat_exhausting do
+		builder = madderlib :repeat_exhausting do
 			say(:intro)
 			a(:man).says { men.shift }.repeat { ! men.empty?}
 			a(:woman).says { women.shift }.while { ! women.empty?}

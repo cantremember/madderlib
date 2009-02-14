@@ -2,9 +2,9 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 
 
 
-describe SentenceBuilder::Builder, "to Sequencer" do
+describe MadderLib::Builder, "to Sequencer" do
 	it "turns an empty builder into an empty sequencer" do
-		sequencer = SentenceBuilder::Builder.new.to_sequencer
+		sequencer = MadderLib::Builder.new.to_sequencer
 
 		sequencer.should have(0).steps
 		sequencer.should have(0).anytimes
@@ -13,7 +13,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 	end
 
 	it "handles a single phrase" do
-		builder = SentenceBuilder::Builder.new()
+		builder = MadderLib::Builder.new()
 		phrase = builder.say('puh-TAY-to').or.say('puh-TAH-to')
 		sequencer = builder.to_sequencer
 
@@ -26,32 +26,32 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 	end
 
 	it "requires valid ids for befores and afters" do
-		builder = sentence_builder do
+		builder = madderlib do
 			before(:missing).say('uh')
 		end
-		lambda { builder.to_sequencer }.should raise_error(SentenceBuilder::Error)
+		lambda { builder.to_sequencer }.should raise_error(MadderLib::Error)
 
-		builder = sentence_builder do
+		builder = madderlib do
 			after(:missing).say('whoa')
 		end
-		lambda { builder.to_sequencer }.should raise_error(SentenceBuilder::Error)
+		lambda { builder.to_sequencer }.should raise_error(MadderLib::Error)
 	end
 
 	it "reminder... Builder#say doesn't derive a Phrase id" do
 		phrase = nil
-		builder = sentence_builder do
+		builder = madderlib do
 			phrase = say(:it, 'words')
 			before(:it).say('something')
 		end
 
 		phrase.id.should be_nil
-		lambda { builder.to_sequencer }.should raise_error(SentenceBuilder::Error)
+		lambda { builder.to_sequencer }.should raise_error(MadderLib::Error)
 	end
 
 
 
 	it "properly sequences firsts" do
-		builder = sentence_builder :sequence_befores do
+		builder = madderlib :sequence_befores do
 			says('loud')
 			first.say('too')
 			first.say('yer')
@@ -72,7 +72,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 	end
 
 	it "properly sequences lasts" do
-		builder = sentence_builder do
+		builder = madderlib do
 			last.say('too')
 			lastly.say('big')
 			say('feet')
@@ -96,22 +96,22 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 
 	it "before and after require referenceable ids" do
 		#	doesn't complain on build
-		builder = sentence_builder do
+		builder = madderlib do
 			before(:say).say 'before'
 			say 'saying'
 		end
 		#	but during validation, etc.
-		lambda { builder.validate }.should raise_error SentenceBuilder::Error
+		lambda { builder.validate }.should raise_error MadderLib::Error
 
-		builder = sentence_builder do
+		builder = madderlib do
 			after(:say).say 'after'
 			say 'saying'
 		end
-		lambda { builder.validate }.should raise_error SentenceBuilder::Error
+		lambda { builder.validate }.should raise_error MadderLib::Error
 	end
 
 	it "moves befores and afters into their own little worlds" do
-		builder = sentence_builder do
+		builder = madderlib do
 			after(:say, :after).say 'after'
 			before(:say, :before).say 'before'
 			a(:say).says 'says'
@@ -159,28 +159,28 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 
 	it "anytime requires referenceable ids" do
 		#	doesn't complain on build
-		builder = sentence_builder do
+		builder = madderlib do
 			anytime.say('dipsy').before(:say)
 			say 'doodle'
 		end
 		#	but during validation, etc.
-		lambda { builder.validate }.should raise_error SentenceBuilder::Error
+		lambda { builder.validate }.should raise_error MadderLib::Error
 
-		builder = sentence_builder do
+		builder = madderlib do
 			anytime.say('doodle').after(:say)
 			say 'dipsy'
 		end
-		lambda { builder.validate }.should raise_error SentenceBuilder::Error
+		lambda { builder.validate }.should raise_error MadderLib::Error
 
-		builder = sentence_builder do
+		builder = madderlib do
 			anytime.say('zzz').between(:night, :day)
 			say 'ni-night'
 		end
-		lambda { builder.validate }.should raise_error SentenceBuilder::Error
+		lambda { builder.validate }.should raise_error MadderLib::Error
 	end
 
 	it "anytimes go into their own little world" do
-		builder = sentence_builder :sequence_befores do
+		builder = madderlib :sequence_befores do
 			anytime(:b).before(:say).say('before')
 			anytime(:a).after(:say).say('after')
 			anytime(:ab).say('somewhere').after(:b).before(:a)
@@ -207,7 +207,7 @@ describe SentenceBuilder::Builder, "to Sequencer" do
 
 
 	it "blends everything together perfectly" do
-		builder = sentence_builder :sequence_befores do
+		builder = madderlib :sequence_befores do
 			last(:late).say('4')
 			first(:early).say('2')
 			last.say('5')

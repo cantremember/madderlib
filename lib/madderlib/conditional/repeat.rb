@@ -1,4 +1,4 @@
-module SentenceBuilder
+module MadderLib
 	module Conditional
 		module Repeat
 

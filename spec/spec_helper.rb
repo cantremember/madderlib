@@ -6,7 +6,7 @@ require 'ruby-debug' rescue nil
 
 #	our dependencies
 #	loaded after debug is ready
-require File.join(File.dirname(__FILE__), '..', 'lib', 'sentence_builder')
+require File.join(File.dirname(__FILE__), '..', 'lib', 'madderlib')
 
 
 
@@ -19,7 +19,7 @@ end
 
 
 
-module SentenceBuilder
+module MadderLib
 	class Builder
 		#	normally private
 		#	oops! reserved names!

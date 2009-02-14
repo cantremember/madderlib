@@ -1,4 +1,4 @@
-module SentenceBuilder
+module MadderLib
 	class Instruction
 		class << self
 			include Conditional::Registry::Static

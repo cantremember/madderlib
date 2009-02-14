@@ -1,4 +1,4 @@
-module SentenceBuilder
+module MadderLib
 	module Conditional
 		module Recur
 
@@ -48,7 +48,7 @@ module SentenceBuilder
 				alias :recurs :recur
 				alias :recurring :recur
 
-				def recurs?(context=SentenceBuilder::Context::EMPTY)
+				def recurs?(context=MadderLib::Context::EMPTY)
 					!! (conditional_recur_tester && (conditional_recur_tester.to_i(context) > 1))
 				end
 

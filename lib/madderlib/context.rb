@@ -1,4 +1,4 @@
-module SentenceBuilder
+module MadderLib
 	class Context
 		attr_reader :sequencer
 		attr_reader :spoken

@@ -2,12 +2,12 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 
 
 
-describe SentenceBuilder::Conditional::Allowed do
+describe MadderLib::Conditional::Allowed do
 
 	it "supports single assumption" do
 		one, two = nil, nil
 
-		builder = sentence_builder do
+		builder = madderlib do
 			say(:one).assuming {|test| one }
 			say(:two).presuming {|test| two }
 			say(:three).if { false }
@@ -30,7 +30,7 @@ describe SentenceBuilder::Conditional::Allowed do
 	it "supports multiple assumptions" do
 		one, two = nil, nil
 
-		builder = sentence_builder do
+		builder = madderlib do
 			say(:something).if {|test| one }.assuming {|test| two }
 		end
 
@@ -49,7 +49,7 @@ describe SentenceBuilder::Conditional::Allowed do
 
 	it "supports id-based assumption" do
 		#	will say first = yes
-		builder = sentence_builder do
+		builder = madderlib do
 			say(:yes).assuming(:spoken)
 			first(:spoken).say(:said)
 		end
@@ -57,7 +57,7 @@ describe SentenceBuilder::Conditional::Allowed do
 		builder.words.should eql(%w{ said yes })
 
 		#	will say last = no
-		builder = sentence_builder do
+		builder = madderlib do
 			say(:yes).if(:spoken)
 			last(:spoken).say(:said)
 		end
@@ -70,7 +70,7 @@ describe SentenceBuilder::Conditional::Allowed do
 	it "supports single forbiddance" do
 		one, two = nil, nil
 
-		builder = sentence_builder do
+		builder = madderlib do
 			say(:one).forbidding {|test| one }
 			say(:two).forbidding {|test| two }
 			say(:three).unless { true }
@@ -93,7 +93,7 @@ describe SentenceBuilder::Conditional::Allowed do
 	it "supports multiple forbiddance" do
 		one, two = nil, nil
 
-		builder = sentence_builder do
+		builder = madderlib do
 			say(:something).unless {|test| one }.forbidding {|test| two }
 		end
 
@@ -112,7 +112,7 @@ describe SentenceBuilder::Conditional::Allowed do
 
 	it "supports id-based forbiddance" do
 		#	will say first = no
-		builder = sentence_builder do
+		builder = madderlib do
 			say(:yes).forbidding(:spoken)
 			first(:spoken).say(:said)
 		end
@@ -120,7 +120,7 @@ describe SentenceBuilder::Conditional::Allowed do
 		builder.words.should eql(%w{ said })
 
 		#	will say last = yes
-		builder = sentence_builder do
+		builder = madderlib do
 			say(:yes).unless(:spoken)
 			last(:spoken).say(:said)
 		end

@@ -2,9 +2,9 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 
 
 
-describe SentenceBuilder::Builder, "building" do
+describe MadderLib::Builder, "building" do
 	before(:each) do
-		@builder = SentenceBuilder::Builder.new
+		@builder = MadderLib::Builder.new
 	end
 
 
@@ -12,7 +12,7 @@ describe SentenceBuilder::Builder, "building" do
 	it "doesn't require an id" do
 		@builder.id.should be_nil
 
-		@builder = SentenceBuilder::Builder.new :id
+		@builder = MadderLib::Builder.new :id
 		@builder.id.should equal(:id)
 	end
 
@@ -96,8 +96,8 @@ describe SentenceBuilder::Builder, "building" do
 		#	this will apply to all id-capable methods
 		@builder.a(:first)
 		@builder.a(:second)
-		lambda { @builder.a(:first) }.should raise_error(SentenceBuilder::Error)
-		lambda { @builder.a(:second) }.should raise_error(SentenceBuilder::Error)
+		lambda { @builder.a(:first) }.should raise_error(MadderLib::Error)
+		lambda { @builder.a(:second) }.should raise_error(MadderLib::Error)
 	end
 
 
@@ -144,7 +144,7 @@ describe SentenceBuilder::Builder, "building" do
 	it "automatic 'extend' during construction" do
 		words = %w{ hello goodbye }
 
-		@builder = SentenceBuilder::Builder.new do
+		@builder = MadderLib::Builder.new do
 			say 'hello'
 			also.say 'goodbye'
 		end
@@ -152,7 +152,7 @@ describe SentenceBuilder::Builder, "building" do
 		@builder.should have(2).phrases
 
 		#	with an id
-		@builder = SentenceBuilder::Builder.new(:id) do
+		@builder = MadderLib::Builder.new(:id) do
 			say 'hello'
 			#	just testing syntactic sugar
 			an(:other).says 'goodbye'
@@ -178,7 +178,7 @@ describe SentenceBuilder::Builder, "building" do
 	end
 
 	it "the 'or' shortcut requires a pre-existing phrase" do
-		lambda { @builder.or }.should raise_error(SentenceBuilder::Error)
+		lambda { @builder.or }.should raise_error(MadderLib::Error)
 	end
 
 
