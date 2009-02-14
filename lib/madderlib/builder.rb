@@ -6,12 +6,13 @@ module MadderLib
 	class Builder
 		include Enumerable
 
-		attr_reader :id, :phrases, :phrase_ids
+		attr_reader :id, :phrases, :phrase_ids, :meta
 
 		def initialize(id=nil, &block)
 			@id = id
 			@phrases, @phrase_ids = [], []
 			@ordered, @depends = [], []
+			@meta = {}
 
 			self.extend &block if block_given?
 			self

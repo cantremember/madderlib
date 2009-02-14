@@ -20,7 +20,6 @@ module MadderLib
 								raise Error, 'invalid weight for instruction : #{instruction.words}' unless weight
 								weights << weight
 							end
-#debugger if phrase.builder.id == :split_3_2_1
 
 							#	easy distributions
 							total = 0

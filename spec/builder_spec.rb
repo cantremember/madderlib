@@ -282,4 +282,13 @@ describe MadderLib::Builder, "building" do
 		#	original is not impacted
 		builder.sentence.should eql('early late')
 	end
+
+	it "holds metadata for you" do
+		builder = madderlib do
+			meta[:cow] = :cow		end
+		builder.meta[:dog] = :dog
+
+		[:cow, :dog].each {|item| builder.meta[item].should equal(item) }
+	end
+
 end
