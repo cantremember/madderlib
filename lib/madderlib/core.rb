@@ -74,6 +74,11 @@ module MadderLib
 		end
 		alias :<< :add
 
+		#	convenience
+		def [](key)
+			@builder_map[key]
+		end
+
 		def close
 			self.class.new_instance
 		end

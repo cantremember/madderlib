@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
 	s.version = '0.1.0'
 	s.date = "2009-02-14"
 
-	s.description = "MadderLib : ___"
+	s.description = "MadderLib : a Sentence-Building DSL for the easily amused"
 	s.summary     = "#{s.name} #{s.version}"
 
 	s.homepage = "http://wiki.cantremember.com/MadderLib"

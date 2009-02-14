@@ -32,6 +32,24 @@ module MadderLib
 		end
 		alias :extend :append
 
+		def clone(id=nil)
+			o = super()
+
+			#	deeper copy
+			@phrases = @phrases.clone
+			@phrase_ids = @phrase_ids.clone
+			@ordered = @ordered.clone
+			@depends = @depends.clone
+
+			#	don't want two of them floating around with the same id
+			o.instance_variable_set :@id, id
+
+			#	put it into the grammar
+			#		most importantly,
+			Grammar.get_instance.add o
+			o
+		end
+
 
 
 		def setup(&block)
@@ -135,9 +153,10 @@ module MadderLib
 		end
 		alias :to_a :words
 
-		def to_s(separator=' ')
+		def sentence(separator=' ')
 			self.words.join(separator)
 		end
+		alias :to_s :sentence
 
 
 

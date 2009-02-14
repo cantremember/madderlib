@@ -44,6 +44,8 @@ describe MadderLib::Builder, "building" do
 		@builder.phrase.should equal(phrase)
 	end
 
+
+
 	it "has id support for some phrase construction methods, not for others" do
 		[
 			:a, :an, :new,
@@ -67,7 +69,7 @@ describe MadderLib::Builder, "building" do
 
 	it "#it is an alias for #phrase" do
 		@builder.it.should equal(@builder.phrase)
-		@builder.it.should be_nil 
+		@builder.it.should be_nil
 
 		@builder.then
 		@builder.should have(1).phrases
@@ -78,7 +80,7 @@ describe MadderLib::Builder, "building" do
 		@builder.should have(0).phrases
 
 		phrase = @builder.phrase
-		@builder.a(:new).should_not equal(phrase)
+		@builder.a(:new).should_not equal(phrase)
 		@builder.should have(1).phrases
 
 		phrase = @builder.phrase
@@ -255,5 +257,29 @@ describe MadderLib::Builder, "building" do
 
 		phrase = @builder.before(:use).say 'init'
 		@builder.dependencies.last.phrase.should equal(phrase)
+	end
+
+
+
+	it "can be cloned and extended" do
+		builder = madderlib :clone_original do
+			an(:early).says 'early'
+			a(:late).says 'late'
+		end
+		builder.id.should equal(:clone_original)
+
+		extended = builder.clone(:clone_extended).extend do
+			before(:early).say "it's"
+			after(:late).say 'bird'
+		end
+
+		#	new id, in the registry
+		extended.id.should equal(:clone_extended)
+		extended.should equal(madderlib_grammar[:clone_extended])
+
+		extended.sentence.should eql("it's early late bird")
+
+		#	original is not impacted
+		builder.sentence.should eql('early late')
 	end
 end

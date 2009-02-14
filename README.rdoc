@@ -1,1 +1,1 @@
-= MadderLib
+= MadderLib : a Sentence-Building DSL for the easily amused
