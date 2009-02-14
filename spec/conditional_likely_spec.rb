@@ -32,8 +32,8 @@ describe SentenceBuilder::Conditional::Likely do
 		map.should have(refs.size).items
 		map.keys.each {|key| refs.include?(key).should be_true }
 
-		diff = map['fish'] - map['buffalo']
-		diff.should be_close(0, 20)
+		map['buffalo'].should be_close(50, 20)
+		map['fish'].should be_close(50, 20)
 	end
 
 	it "supports nothing" do
@@ -53,8 +53,7 @@ describe SentenceBuilder::Conditional::Likely do
 		map.should have(1).items
 		map['something nice'].should_not be_nil
 
-		diff = 100 - map['something nice']
-		diff.should be_close(50, 20)
+		map['something nice'].should be_close(50, 20)
 	end
 
 
@@ -79,8 +78,8 @@ describe SentenceBuilder::Conditional::Likely do
 		map.should have(refs.size).items
 		map.keys.each {|key| refs.include?(key).should be_true }
 
-		diff = map['fish'].to_f / map['buffalo']
-		diff.should be_close(2.0, 0.6)
+		map['buffalo'].should be_close(33, 20)
+		map['fish'].should be_close(66, 20)
 	end
 
 	it "getting a 3/1 split" do
@@ -102,8 +101,9 @@ describe SentenceBuilder::Conditional::Likely do
 		#		and should have a reasonable distribution (though who can tell)
 		map.should have(refs.size).items
 		map.keys.each {|key| refs.include?(key).should be_true }
-		diff = map['fish'].to_f / map['buffalo']
-		diff.should be_close(3.0, 1.0)
+
+		map['buffalo'].should be_close(25, 20)
+		map['fish'].should be_close(75, 20)
 	end
 
 
@@ -119,7 +119,7 @@ describe SentenceBuilder::Conditional::Likely do
 
 		refs = %w{ faith hope charity }
 		map = nil
-		pound_on do
+		pound_on 150 do
 			words = builder.words
 			map = distribution(words, map)
 		end
@@ -130,12 +130,9 @@ describe SentenceBuilder::Conditional::Likely do
 		map.should have(refs.size).items
 		map.keys.each {|key| refs.include?(key).should be_true }
 
-		diff = map['charity'].to_f / map['faith']
-		#	i've seen it range from 2 to 5 ... absurd!
-		diff.should be_close(3.5, 2.0)
-
-		diff = map['hope'].to_f / map['faith']
-		diff.should be_close(2.0, 0.8)
+		map['faith'].should be_close(25, 20)
+		map['hope'].should be_close(50, 20)
+		map['charity'].should be_close(75, 20)
 	end
 
 end

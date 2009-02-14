@@ -60,8 +60,9 @@ describe SentenceBuilder, "benchmarking" do
 
 			#	the operations should take a very similar amount of time
 			#		no degradation, like we saw with Generator
+			#		still, we need to be generous (1/2 sec)
 			t = (Time.now.to_f - t)
-			t.should be_close(delta, 0.1) if delta
+			t.should be_close(delta, 0.5) if delta
 			delta = t
 		end	end
 

@@ -4,7 +4,11 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 
 describe SentenceBuilder::Grammar do
 	before(:all) do
-		@class = SentenceBuilder::Grammar	end
+		@class = SentenceBuilder::Grammar
+
+		#	close any pre-existing grammar
+		sentence_grammar.close
+	end
 
 
 
