@@ -121,61 +121,25 @@ module SentenceBuilder
 
 		def each_word
 			#	from our words
-			self.to_words.each {|word| yield word }
+			self.words.each {|word| yield word }
 		end
 		alias :each :each_word
 
-		#	returns the raw contents of the sequencer
-		def to_gen
-			Generator.new(self.to_sequencer)
-		end
-		alias :validate :to_gen
-
 		#	returns the words from the sequencer
-		def to_words
-			a, g = [], self.to_gen
-			a << g.next while g.next?
-			a
+		def words
+			#	a new Sequencer each time
+			#	TODO: optimize
+			#		dirty flag is hard since phrases is exposed
+			#		hashsum?  clone of last known phrases PLUS dirty flag?
+			self.to_sequencer.words
 		end
-		alias :to_a :to_words
+		alias :to_a :words
 
 		def to_s(separator=' ')
-			self.to_words.join(separator)
+			self.words.join(separator)
 		end
 
 
-
-		#	- - - - -
-		protected
-
-		def add_id(id)
-			if id
-				raise Error, "id already exists : #{id.inspect}" if @phrase_ids.include?(id)
-				@phrase_ids << id
-			end
-		end
-
-		ORDERED = Struct.new(:phrase, :type)
-		def ordered(phrase, type)
-			#	simple tuple, but with order retained
-			(@ordered ||= []) << ORDERED.new(phrase, type)
-			phrase
-		end
-
-		def ordered?(phrase)
-			!! @ordered.find {|o| o.phrase == phrase }
-		end
-
-		DEPENDS = Struct.new(:phrase, :type, :ref)
-		def depends(phrase, type, ref)
-			#	simple tuple, but with order retained
-			(@depends ||= []) << DEPENDS.new(phrase, type, ref)
-			phrase
-		end
-
-		def depends?(phrase)
-			!! @depends.find {|o| o.phrase == phrase }
-		end
 
 		def to_sequencer
 			#	general ordering
@@ -236,6 +200,41 @@ module SentenceBuilder
 				:anytime => anytimes, :before => befores, :after => afters,
 				:setup => @setup, :teardown => @teardown
 			})
+		end
+		alias :validate :to_sequencer
+
+
+
+		#	- - - - -
+		protected
+
+		def add_id(id)
+			if id
+				raise Error, "id already exists : #{id.inspect}" if @phrase_ids.include?(id)
+				@phrase_ids << id
+			end
+		end
+
+		ORDERED = Struct.new(:phrase, :type)
+		def ordered(phrase, type)
+			#	simple tuple, but with order retained
+			(@ordered ||= []) << ORDERED.new(phrase, type)
+			phrase
+		end
+
+		def ordered?(phrase)
+			!! @ordered.find {|o| o.phrase == phrase }
+		end
+
+		DEPENDS = Struct.new(:phrase, :type, :ref)
+		def depends(phrase, type, ref)
+			#	simple tuple, but with order retained
+			(@depends ||= []) << DEPENDS.new(phrase, type, ref)
+			phrase
+		end
+
+		def depends?(phrase)
+			!! @depends.find {|o| o.phrase == phrase }
 		end
 	end
 end

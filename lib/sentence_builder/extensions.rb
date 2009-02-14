@@ -1,6 +1,17 @@
 class Range
 	def rand(precision=0)
-		span = [self.min, self.max]
+		rand_from self.min, self.max, 0
+	end
+
+	def rand_inclusive(precision=0)
+		rand_from self.min, self.max + 1, 0
+	end
+
+	#	- - - - -
+	private
+
+	def rand_from(a, b, precision)
+		span = [a, b]
 		min, max = span.min, span.max
 
 		min + if precision == 0

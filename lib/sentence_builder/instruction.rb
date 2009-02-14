@@ -47,7 +47,7 @@ module SentenceBuilder
 		class << self
 			def wordify(source, context)
 				#	our own dogfood
-				return source.to_words if Builder === source
+				return source.words if Builder === source
 
 				if (Proc === source)
 					#	evaluate

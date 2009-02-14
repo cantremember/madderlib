@@ -16,7 +16,7 @@ describe SentenceBuilder::Instruction do
 			say :two
 			say { 3 }
 		end
-		builder.to_words.should eql(%w{ one two 3 })
+		builder.words.should eql(%w{ one two 3 })
 
 		words =  SentenceBuilder::Instruction.wordify(builder, SentenceBuilder::Context::EMPTY)
 		words.should have(3).words

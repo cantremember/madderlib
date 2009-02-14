@@ -2,18 +2,20 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 
 
 
-describe SentenceBuilder::Builder, "to Generator, Array, etc" do
-	WORDS = ['one', 'two', 'three']
+describe SentenceBuilder::Builder, "has component parts" do
+	WORDS = %w{ one two three }
 
 
 
-	it "converts to a Generator" do
-		gen = (sentence_builder do
-			WORDS.each {|word| say word }
-		end).to_gen
-
+	it "is iterable" do
 		words = []
-		words << gen.next while gen.next?
+
+		(sentence_builder do
+			WORDS.each {|word| say word }
+		end).each do |word|
+			words << word
+		end
+
 		words.should eql(WORDS)
 	end
 

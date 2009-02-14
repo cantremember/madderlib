@@ -30,18 +30,10 @@ module SentenceBuilder
 
 		#	returns each word in the sequence
 		def words
-			#	yes, we do cache at this level
-			#	it's publicly exposed
-			unless @items
-				#	composite the words
-				#		each node contains an array of words
-				@items = self.sequence.collect {|node| node.words }
-				@items = @items.flatten
-			end
-
-			@items
+			#	composite the words
+			#		each node contains an array of words
+			self.sequence.collect {|node| node.words }.flatten
 		end
-		alias :items :words
 
 		#	iterates over each word in the sequence
 		def each_word

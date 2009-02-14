@@ -10,7 +10,7 @@ describe SentenceBuilder::Conditional::Repeat do
 			say(:two)
 		end
 
-		builder.to_words.should eql(%w{ one two })
+		builder.words.should eql(%w{ one two })
 	end
 
 	it "supports simple repeating" do
@@ -20,7 +20,7 @@ describe SentenceBuilder::Conditional::Repeat do
 			say(:thrice).times(3)
 		end
 
-		builder.to_words.should eql(%w{ once twice twice thrice thrice thrice })
+		builder.words.should eql(%w{ once twice twice thrice thrice thrice })
 	end
 
 	it "supports a 0-repeat, which blocks the instruction" do
@@ -29,7 +29,7 @@ describe SentenceBuilder::Conditional::Repeat do
 			say(:two).times(0)
 		end
 
-		builder.to_words.should eql(%w{ one })
+		builder.words.should eql(%w{ one })
 	end
 
 	it "supports Ranged repeating" do
@@ -40,7 +40,7 @@ describe SentenceBuilder::Conditional::Repeat do
 		end
 
 		pound_on do
-			words = builder.to_words
+			words = builder.words
 			words.shift.should eql('once')
 
 			repeat = []
@@ -63,10 +63,10 @@ describe SentenceBuilder::Conditional::Repeat do
 			a(:woman).says { women.shift }.while { ! women.empty?}
 		end
 
-		builder.to_words.should eql(%w{ intro fred barney wilma betty })
+		builder.words.should eql(%w{ intro fred barney wilma betty })
 
 		#	the next pass should be exhausted
-		builder.to_words.should eql(%w{ intro })
+		builder.words.should eql(%w{ intro })
 	end
 
 end

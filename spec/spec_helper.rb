@@ -26,8 +26,6 @@ module SentenceBuilder
 		###attr_reader :ordered, :depends
 		def orderings; @ordered; end
 		def dependencies; @depends; end
-
-		send :public, :to_sequencer
 	end
 
 	class Sequencer

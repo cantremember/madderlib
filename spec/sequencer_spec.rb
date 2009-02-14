@@ -18,7 +18,7 @@ describe SentenceBuilder::Sequencer do
 			teardown { holder << :teardown }
 		end).to_sequencer
 
-		sequencer.items.should eql(%w{ setup })
+		sequencer.words.should eql(%w{ setup })
 		holder.should have(1).item
 		holder.first.should equal(:teardown)
 	end
@@ -30,7 +30,7 @@ describe SentenceBuilder::Sequencer do
 			say :hello
 		end).to_sequencer
 
-		sequencer.items.should eql(%w{ hello })
+		sequencer.words.should eql(%w{ hello })
 	end
 
 	it "handles multiple says" do
@@ -44,7 +44,7 @@ describe SentenceBuilder::Sequencer do
 			also.says :end
 		end).to_sequencer
 
-		sequencer.items.should eql(%w{
+		sequencer.words.should eql(%w{
 			cover contents beginning middle end
 		})
 	end
@@ -58,7 +58,7 @@ describe SentenceBuilder::Sequencer do
 			before(:ref).say :before
 		end).to_sequencer
 
-		sequencer.items.should eql(%w{ before ref })
+		sequencer.words.should eql(%w{ before ref })
 
 		#	multiple instances, multiple words
 		sequencer = (sentence_builder :flat_multiple_before do
@@ -67,7 +67,7 @@ describe SentenceBuilder::Sequencer do
 			before(:ref).say :a
 		end).to_sequencer
 
-		sequencer.items.should eql(%w{ a b c ref })
+		sequencer.words.should eql(%w{ a b c ref })
 	end
 
 	it "handles flat after sequencing" do
@@ -77,7 +77,7 @@ describe SentenceBuilder::Sequencer do
 			after(:ref).say :after
 		end).to_sequencer
 
-		sequencer.items.should eql(%w{ ref after })
+		sequencer.words.should eql(%w{ ref after })
 
 		#	multiple instances, multiple words
 		sequencer = (sentence_builder :flat_multiple_after do
@@ -86,7 +86,7 @@ describe SentenceBuilder::Sequencer do
 			after(:ref).say :z
 		end).to_sequencer
 
-		sequencer.items.should eql(%w{ ref x y z })
+		sequencer.words.should eql(%w{ ref x y z })
 	end
 
 
@@ -99,7 +99,7 @@ describe SentenceBuilder::Sequencer do
 			before(:inner).say :outer
 		end).to_sequencer
 
-		sequencer.items.should eql(%w{ outer inner ref })
+		sequencer.words.should eql(%w{ outer inner ref })
 
 		#	multiple instances, multiple words
 		sequencer = (sentence_builder :nested_multiple_before do
@@ -114,7 +114,7 @@ describe SentenceBuilder::Sequencer do
 			before(:ref).say :a
 		end).to_sequencer
 
-		sequencer.items.should eql(%w{ a b1 b2 c d e1 e2 f ref })
+		sequencer.words.should eql(%w{ a b1 b2 c d e1 e2 f ref })
 	end
 
 	it "handles nested after sequencing" do
@@ -125,7 +125,7 @@ describe SentenceBuilder::Sequencer do
 			after(:ref, :inner).say :inner
 		end).to_sequencer
 
-		sequencer.items.should eql(%w{ ref inner outer })
+		sequencer.words.should eql(%w{ ref inner outer })
 
 		#	multiple instances, multiple words
 		sequencer = (sentence_builder :nested_multiple_before do
@@ -140,7 +140,7 @@ describe SentenceBuilder::Sequencer do
 			after(:ref).say :z
 		end).to_sequencer
 
-		sequencer.items.should eql(%w{ ref u v1 v2 w x y1 y2 z })
+		sequencer.words.should eql(%w{ ref u v1 v2 w x y1 y2 z })
 	end
 
 
@@ -178,7 +178,7 @@ describe SentenceBuilder::Sequencer do
 			after(:ref).say :z
 		end).to_sequencer
 
-		sequencer.items.should eql(%w{
+		sequencer.words.should eql(%w{
 			a b c d e f g h i
 			ref
 			r s t u v w x y z
@@ -192,7 +192,7 @@ describe SentenceBuilder::Sequencer do
 			anytime.say :anything
 		end).to_sequencer
 
-		sequencer.items.should eql(%w{ anything })
+		sequencer.words.should eql(%w{ anything })
 	end
 
 	it "handles simple anytimes" do
@@ -202,7 +202,7 @@ describe SentenceBuilder::Sequencer do
 			anytime.say :anything
 		end).to_sequencer
 
-		sequencer.items.should eql(%w{ something anything })
+		sequencer.words.should eql(%w{ something anything })
 
 		#	only one place to go
 		#		because it won't start or end the sequence
@@ -213,8 +213,7 @@ describe SentenceBuilder::Sequencer do
 		end
 
 		pound_on do
-			#	a sequencer caches its items
-			items = builder.to_sequencer.items
+			items = builder.words
 			items.should eql(%w{ one gotcha two })
 		end
 	end
@@ -229,8 +228,7 @@ describe SentenceBuilder::Sequencer do
 		end
 
 		pound_on do
-			#	a sequencer caches its items
-			items = builder.to_sequencer.items
+			items = builder.words
 			items.should eql(%w{ one two })
 		end
 
@@ -243,8 +241,7 @@ describe SentenceBuilder::Sequencer do
 		end
 
 		pound_on do
-			#	a sequencer caches its items
-			items = builder.to_sequencer.items
+			items = builder.words
 			items.should eql(%w{ one two gotcha three })
 		end
 	end
@@ -259,8 +256,7 @@ describe SentenceBuilder::Sequencer do
 		end
 
 		pound_on do
-			#	a sequencer caches its items
-			items = builder.to_sequencer.items
+			items = builder.words
 			items.should eql(%w{ one two })
 		end
 
@@ -273,8 +269,7 @@ describe SentenceBuilder::Sequencer do
 		end
 
 		pound_on do
-			#	a sequencer caches its items
-			items = builder.to_sequencer.items
+			items = builder.words
 			items.should eql(%w{ one gotcha two three })
 		end
 	end
@@ -290,7 +285,7 @@ describe SentenceBuilder::Sequencer do
 				a(:second).says :three
 				say :four
 				anytime.between(:second, :first).say :never
-			end).to_sequencer.items
+			end).to_sequencer.words
 		end).should raise_error SentenceBuilder::Error
 	end
 
@@ -303,8 +298,7 @@ describe SentenceBuilder::Sequencer do
 		end
 
 		pound_on do
-			#	a sequencer caches its items
-			items = builder.to_sequencer.items
+			items = builder.words
 			items.should eql(%w{ one })
 		end
 
@@ -318,8 +312,7 @@ describe SentenceBuilder::Sequencer do
 		end
 
 		pound_on do
-			#	a sequencer caches its items
-			items = builder.to_sequencer.items
+			items = builder.words
 			items.should eql(%w{ one two gotcha three four })
 		end
 
@@ -332,8 +325,7 @@ describe SentenceBuilder::Sequencer do
 		end
 
 		pound_on do
-			#	a sequencer caches its items
-			items = builder.to_sequencer.items
+			items = builder.words
 
 			items.shift.should eql('one')
 			items.pop.should eql('three')

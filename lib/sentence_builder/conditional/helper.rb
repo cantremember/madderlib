@@ -27,7 +27,7 @@ module SentenceBuilder
 							if Range === arg
 								#	we received a Range
 								@criteria = arg
-							elsif arg.integer?
+							elsif arg.respond_to?(:integer?) && arg.integer?
 								upper = args.first
 								if upper && upper.respond_to?(:integer?) && upper.integer?
 									#	we can make a Range from that
@@ -61,7 +61,9 @@ module SentenceBuilder
 						@criteria
 					elsif Range === @criteria
 						#	we'll stop somewhere in that range
-						limit = unitize(@criteria.rand)
+						#		note that it's inclusive
+						#		if the caller says '2 .. 4', 4 should be a possibility
+						limit = unitize(@criteria.rand_inclusive)
 						lambda {|count| count < limit }
 					elsif @criteria.integer?
 						limit = unitize(@criteria)

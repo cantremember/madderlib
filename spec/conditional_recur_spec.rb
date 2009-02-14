@@ -16,7 +16,7 @@ describe SentenceBuilder::Conditional::Recur do
 			phrase.recurs?.should be_false if phrase.respond_to?(:recurs?)
 		end
 
-		builder.to_words.should eql(%w{ start any end })
+		builder.words.should eql(%w{ start any end })
 	end
 
 	it "supports simple recurrence" do
@@ -31,7 +31,7 @@ describe SentenceBuilder::Conditional::Recur do
 			phrase.recurs?.should be_true if phrase.respond_to?(:recurs?)
 		end
 
-		builder.to_words.should eql(%w{ start any any end })
+		builder.words.should eql(%w{ start any any end })
 	end
 
 	it "supports a 0-recurrence, which blocks the phrase" do
@@ -41,7 +41,7 @@ describe SentenceBuilder::Conditional::Recur do
 			say(:end)
 		end
 
-		builder.to_words.should eql(%w{ start end })
+		builder.words.should eql(%w{ start end })
 	end
 
 	it "supports Ranged recurrence" do
@@ -54,8 +54,7 @@ describe SentenceBuilder::Conditional::Recur do
 		end
 
 		pound_on do
-			#	a sequencer caches its items
-			words = builder.to_sequencer.words
+			words = builder.words
 
 			words.shift.should eql('start')
 			words.pop.should eql('end')
@@ -86,7 +85,7 @@ describe SentenceBuilder::Conditional::Recur do
 			anytime.recur { ! spices.empty? }.say { spices.shift }
 		end
 
-		words = builder.to_words
+		words = builder.words
 		words.shift.should eql('start')
 		words.pop.should eql('end')
 
@@ -97,7 +96,7 @@ describe SentenceBuilder::Conditional::Recur do
 		end
 
 		#	the next pass should be exhausted
-		builder.to_words.should eql(%w{ start salt pepper flour end })
+		builder.words.should eql(%w{ start salt pepper flour end })
 	end
 
 end

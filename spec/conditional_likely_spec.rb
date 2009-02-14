@@ -23,7 +23,7 @@ describe SentenceBuilder::Conditional::Likely do
 		refs = %w{ buffalo fish }
 		map = nil
 		pound_on do
-			map = distribution(builder.to_words, map)
+			map = distribution(builder.words, map)
 		end
 
 		#	now that'we re done
@@ -44,7 +44,7 @@ describe SentenceBuilder::Conditional::Likely do
 
 		map = nil
 		pound_on(100) do
-			map = distribution(builder.to_words, map)
+			map = distribution(builder.words, map)
 		end
 
 		#	now that'we re done
@@ -69,7 +69,7 @@ describe SentenceBuilder::Conditional::Likely do
 		refs = %w{ buffalo fish }
 		map = nil
 		pound_on do
-			words = builder.to_words
+			words = builder.words
 			map = distribution(words, map)
 		end
 
@@ -93,7 +93,7 @@ describe SentenceBuilder::Conditional::Likely do
 		refs = %w{ buffalo fish }
 		map = nil
 		pound_on do
-			words = builder.to_words
+			words = builder.words
 			map = distribution(words, map)
 		end
 
@@ -111,17 +111,16 @@ describe SentenceBuilder::Conditional::Likely do
 	it "getting a 3/2/1 split" do
 		#	testing out transferrence from 'or' operation to likelihood
 		builder = sentence_builder :split_3_2_1 do
-			say 'beers'
-			alternately(2).says('steers')
+			say 'faith'
+			alternately(2).says('hope')
 			#	range is supported, but not recommended
-			it.or(0..3).says('queers')
+			it.or(0..3).says('charity')
 		end
 
-		refs = %w{ beers steers queers }
+		refs = %w{ faith hope charity }
 		map = nil
-		#	jacking up the sample size doesn't seem to help much
-		pound_on 200 do
-			words = builder.to_words
+		pound_on do
+			words = builder.words
 			map = distribution(words, map)
 		end
 
@@ -131,11 +130,11 @@ describe SentenceBuilder::Conditional::Likely do
 		map.should have(refs.size).items
 		map.keys.each {|key| refs.include?(key).should be_true }
 
-		diff = map['queers'].to_f / map['beers']
+		diff = map['charity'].to_f / map['faith']
 		#	i've seen it range from 2 to 5 ... absurd!
 		diff.should be_close(3.5, 2.0)
 
-		diff = map['steers'].to_f / map['beers']
+		diff = map['hope'].to_f / map['faith']
 		diff.should be_close(2.0, 0.8)
 	end
 

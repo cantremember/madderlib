@@ -22,7 +22,7 @@ describe SentenceBuilder::Conditional::Allowed do
 				words << 'one' if one
 				words << 'two' if two
 
-				builder.to_words.should eql(words)
+				builder.words.should eql(words)
 			end
 		end
 	end
@@ -42,7 +42,7 @@ describe SentenceBuilder::Conditional::Allowed do
 				words = []
 				words << 'something' if one && two
 
-				builder.to_words.should eql(words)
+				builder.words.should eql(words)
 			end
 		end
 	end
@@ -54,7 +54,7 @@ describe SentenceBuilder::Conditional::Allowed do
 			first(:spoken).say(:said)
 		end
 
-		builder.to_words.should eql(%w{ said yes })
+		builder.words.should eql(%w{ said yes })
 
 		#	will say last = no
 		builder = sentence_builder do
@@ -62,7 +62,7 @@ describe SentenceBuilder::Conditional::Allowed do
 			last(:spoken).say(:said)
 		end
 
-		builder.to_words.should eql(%w{ said })
+		builder.words.should eql(%w{ said })
 	end
 
 
@@ -85,7 +85,7 @@ describe SentenceBuilder::Conditional::Allowed do
 				words << 'one' unless one
 				words << 'two' unless two
 
-				builder.to_words.should eql(words)
+				builder.words.should eql(words)
 			end
 		end
 	end
@@ -105,7 +105,7 @@ describe SentenceBuilder::Conditional::Allowed do
 				words = []
 				words << 'something' unless one || two
 
-				builder.to_words.should eql(words)
+				builder.words.should eql(words)
 			end
 		end
 	end
@@ -117,7 +117,7 @@ describe SentenceBuilder::Conditional::Allowed do
 			first(:spoken).say(:said)
 		end
 
-		builder.to_words.should eql(%w{ said })
+		builder.words.should eql(%w{ said })
 
 		#	will say last = yes
 		builder = sentence_builder do
@@ -125,6 +125,6 @@ describe SentenceBuilder::Conditional::Allowed do
 			last(:spoken).say(:said)
 		end
 
-		builder.to_words.should eql(%w{ yes said })
+		builder.words.should eql(%w{ yes said })
 	end
 end
