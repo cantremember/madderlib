@@ -3,14 +3,14 @@ Gem::Specification.new do |s|
 	s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
 	s.required_ruby_version = '>= 1.8'
 
-	s.name = 'sentence_builder'
+	s.name = 'madderlib'
 	s.version = '0.1.0'
 	s.date = "2009-02-14"
 
-	s.description = "SentenceBuilder : ___"
+	s.description = "MadderLib : ___"
 	s.summary     = "#{s.name} #{s.version}"
 
-	s.homepage = "http://wiki.cantremember.com/SentenceBuilder"
+	s.homepage = "http://wiki.cantremember.com/MadderLib"
 	s.authors = ["Dan Foley"]
 	s.email = 'admin@cantremember.com'
 
@@ -33,9 +33,9 @@ Gem::Specification.new do |s|
 
 	s.has_rdoc = true
 	#	only because there ain't no spaces in the title ...
-	s.rdoc_options = %w{ --line-numbers --inline-source --title SentenceBuilder --main README.rdoc }
+	s.rdoc_options = %w{ --line-numbers --inline-source --title MadderLib --main README.rdoc }
 	s.extra_rdoc_files = %w{ README.rdoc CHANGELOG LICENSE }
 
-	s.rubyforge_project = 'sentence_builder'
+	s.rubyforge_project = 'madderlib'
 	s.rubygems_version = '1.1.1'
 end

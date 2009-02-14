@@ -24,7 +24,7 @@ def spec
 	@spec ||=
 		begin
 			require 'rubygems/specification'
-			data = File.read('sentence_builder.gemspec')
+			data = File.read('madderlib.gemspec')
 			spec = nil
 			#	OS X didn't like SAFE = 2
 			#		(eval):25:in `glob': Insecure operation - glob
@@ -34,7 +34,7 @@ def spec
 end
 
 def package(ext='')
-	"dist/sentence_builder-#{spec.version}" + ext
+	"dist/madderlib-#{spec.version}" + ext
 end
 
 desc 'Build packages'
@@ -47,8 +47,8 @@ end
 
 directory 'dist/'
 
-file package('.gem') => %w[dist/ sentence_builder.gemspec] + spec.files do |f|
-	sh "gem build sentence_builder.gemspec"
+file package('.gem') => %w[dist/ madderlib.gemspec] + spec.files do |f|
+	sh "gem build madderlib.gemspec"
 	mv File.basename(f.name), f.name
 end
 
@@ -60,13 +60,13 @@ end
 
 desc 'Publish website to rubyforge'
 task 'publish:doc' => 'doc/api/index.html' do
-	sh 'scp -rp doc/* cantremember@rubyforge.org:/var/www/gforge-projects/sentence_builder/'
+	sh 'scp -rp doc/* cantremember@rubyforge.org:/var/www/gforge-projects/madderlib/'
 end
 
 task 'publish:gem' => [package('.gem'), package('.tar.gz')] do |t|
 	sh <<-end
-		rubyforge add_release sentence_builder sentence_builder #{spec.version} #{package('.gem')} &&
-		rubyforge add_file    sentence_builder sentence_builder #{spec.version} #{package('.tar.gz')}
+		rubyforge add_release madderlib madderlib #{spec.version} #{package('.gem')} &&
+		rubyforge add_file    madderlib madderlib #{spec.version} #{package('.tar.gz')}
 	end
 end
 
@@ -81,7 +81,7 @@ task 'doc:api' => ['doc/api/index.html']
 file 'doc/api/index.html' => FileList['lib/**/*.rb','README.rdoc','CHANGELOG','LICENSE'] do |f|
 	rb_files = f.prerequisites
 	sh((<<-end).gsub(/\s+/, ' '))
-		rdoc --line-numbers --inline-source --title SentenceBuilder --main README.rdoc
+		rdoc --line-numbers --inline-source --title MadderLib --main README.rdoc
 					#{rb_files.join(' ')}
 	end
 end
@@ -105,14 +105,14 @@ task 'doc:site' => ['doc/index.html']
 
 file 'doc/index.html' => %w[README.rdoc doc/template.haml] do |file|
 	File.open(file.name, 'w') do |file|
-		file << haml(:title => 'SentenceBuilder', :content => rdoc_to_html('README.rdoc'))
+		file << haml(:title => 'MadderLib', :content => rdoc_to_html('README.rdoc'))
 	end
 end
 CLEAN.include 'doc/index.html'
 
 # Gemspec Helpers ====================================================
 
-file 'sentence_builder.gemspec' => FileList['{lib,spec}/**','Rakefile'] do |f|
+file 'madderlib.gemspec' => FileList['{lib,spec}/**','Rakefile'] do |f|
 	# read spec file and split out manifest section
 	spec = File.read(f.name)
 	parts = spec.split("  # = MANIFEST =\n")
