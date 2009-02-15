@@ -46,6 +46,7 @@ task :install => package('.gem') do
 end
 
 directory 'dist/'
+CLEAN.include 'dist'
 
 file package('.gem') => %w[dist/ madderlib.gemspec] + spec.files do |f|
 	sh "gem build madderlib.gemspec"
@@ -115,7 +116,7 @@ CLEAN.include 'doc/index.html'
 file 'madderlib.gemspec' => FileList['{lib,spec}/**','Rakefile'] do |f|
 	# read spec file and split out manifest section
 	spec = File.read(f.name)
-	parts = spec.split("	# = MANIFEST =\n")
+	parts = spec.split(/\s+# = MANIFEST =\n/)
 	fail 'bad spec' if parts.length != 3
 	# determine file list from git ls-files
 	files = `git ls-files`.

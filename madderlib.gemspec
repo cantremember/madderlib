@@ -14,48 +14,48 @@ Gem::Specification.new do |s|
 	s.authors = ["Dan Foley"]
 	s.email = 'admin@cantremember.com'
 
-  # = MANIFEST =
-  s.files = %w[
-    CHANGELOG
-    LICENSE
-    README.rdoc
-    Rakefile
-    lib/madderlib.rb
-    lib/madderlib/builder.rb
-    lib/madderlib/conditional/allowed.rb
-    lib/madderlib/conditional/helper.rb
-    lib/madderlib/conditional/likely.rb
-    lib/madderlib/conditional/recur.rb
-    lib/madderlib/conditional/registry.rb
-    lib/madderlib/conditional/repeat.rb
-    lib/madderlib/context.rb
-    lib/madderlib/core.rb
-    lib/madderlib/extensions.rb
-    lib/madderlib/instruction.rb
-    lib/madderlib/phrase.rb
-    lib/madderlib/sequencer.rb
-    madderlib.gemspec
-    spec/benchmark_spec.rb
-    spec/builder_spec.rb
-    spec/builder_to_other_spec.rb
-    spec/builder_to_sequencer_spec.rb
-    spec/conditional_allowed_spec.rb
-    spec/conditional_helper_spec.rb
-    spec/conditional_likely_spec.rb
-    spec/conditional_recur_spec.rb
-    spec/conditional_registry_spec.rb
-    spec/conditional_repeat_spec.rb
-    spec/error_spec.rb
-    spec/examples_spec.rb
-    spec/extensions_spec.rb
-    spec/grammar_spec.rb
-    spec/instruction_spec.rb
-    spec/kernel_spec.rb
-    spec/phrase_spec.rb
-    spec/sequencer_spec.rb
-    spec/spec_helper.rb
-  ]
-  # = MANIFEST =
+	# = MANIFEST =
+	s.files = %w[
+		CHANGELOG
+		LICENSE
+		README.rdoc
+		Rakefile
+		lib/madderlib.rb
+		lib/madderlib/builder.rb
+		lib/madderlib/conditional/allowed.rb
+		lib/madderlib/conditional/helper.rb
+		lib/madderlib/conditional/likely.rb
+		lib/madderlib/conditional/recur.rb
+		lib/madderlib/conditional/registry.rb
+		lib/madderlib/conditional/repeat.rb
+		lib/madderlib/context.rb
+		lib/madderlib/core.rb
+		lib/madderlib/extensions.rb
+		lib/madderlib/instruction.rb
+		lib/madderlib/phrase.rb
+		lib/madderlib/sequencer.rb
+		madderlib.gemspec
+		spec/benchmark_spec.rb
+		spec/builder_spec.rb
+		spec/builder_to_other_spec.rb
+		spec/builder_to_sequencer_spec.rb
+		spec/conditional_allowed_spec.rb
+		spec/conditional_helper_spec.rb
+		spec/conditional_likely_spec.rb
+		spec/conditional_recur_spec.rb
+		spec/conditional_registry_spec.rb
+		spec/conditional_repeat_spec.rb
+		spec/error_spec.rb
+		spec/examples_spec.rb
+		spec/extensions_spec.rb
+		spec/grammar_spec.rb
+		spec/instruction_spec.rb
+		spec/kernel_spec.rb
+		spec/phrase_spec.rb
+		spec/sequencer_spec.rb
+		spec/spec_helper.rb
+	]
+	# = MANIFEST =
 
 	s.require_paths = %w{lib}
 
