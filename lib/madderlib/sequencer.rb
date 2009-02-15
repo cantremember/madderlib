@@ -29,10 +29,18 @@ module MadderLib
 
 
 		#	returns each word in the sequence
-		def words
+		def words(&block)
+			#	sequence the phrases
+			nodes, context = self.sequence
+
 			#	composite the words
 			#		each node contains an array of words
-			sequence.collect {|node| node.words }.flatten
+			composite = nodes.collect {|node| node.words }.flatten
+
+			#	dispatch back the context
+			yield context if block_given?
+
+			composite
 		end
 
 		#	iterates over each word in the sequence
@@ -43,7 +51,8 @@ module MadderLib
 
 		#	returns each phrase in the sequence
 		def each_phrase
-			self.sequence.each {|node| yield node.phrase }
+			nodes, context = self.sequence
+			nodes.each {|node| yield node.phrase }
 		end
 
 
@@ -63,8 +72,8 @@ module MadderLib
 			context = Context.new(self)
 
 			if (@setup)
-				#	dispatch to the setup block
-				Context.invoke(@setup, context)
+				#	dispatch to each block
+				@setup.each {|block| Context.invoke(block, context) }
 			end
 
 			#	all the basic steps
@@ -212,11 +221,11 @@ module MadderLib
 			end
 
 			if (@teardown)
-				#	dispatch to the setup block
-				Context.invoke(@teardown, context)
+				#	dispatch to each block
+				@teardown.each {|block| Context.invoke(block, context) }
 			end
 
-			flattened
+			return flattened, context
 		end
 
 		def traverse(phrase, context)
@@ -224,7 +233,7 @@ module MadderLib
 				words = phrz.speak(context)
 				words = [words] unless Array === words
 
-				#	remember how it was used
+				#	track how our phrases are used
 				if words.empty?
 					context.silent << phrz
 				else

@@ -4,12 +4,19 @@ module MadderLib
 		attr_reader :spoken
 		attr_reader :silent
 		attr_reader :spoken_ids
+		attr_reader :instructions
+		attr_reader :contexts
 		attr_reader :data
 
 		def initialize(sequencer)
 			@sequencer = sequencer
 			@spoken, @silent, @spoken_ids = [], [], []
+			@instructions, @contexts = [], []
 			@state, @data = {}, {}
+		end
+
+		def builder
+			@sequencer.builder
 		end
 
 		def state(key)

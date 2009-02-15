@@ -248,4 +248,42 @@ describe MadderLib::Builder, "to Sequencer" do
 		end
 		marks.should eql(%w{ imaginary random })
 	end
+
+	it "can collect the executed context" do
+		builder = madderlib :outer do
+			say madderlib(:inner_1) { say 'inner' }
+			say 'plain'
+			#	tried a do .. end block here, wasn't seen
+			#		using { .. } does work
+			say madderlib(:inner_2) {
+				say madderlib(:deep_1) { say 'deep' }
+				say madderlib(:deep_2) { say 'deeper' }
+			}
+		end
+
+		context = nil
+		words = builder.words {|ctx| context = ctx }
+		words.should eql(%w{ inner plain deep deeper })
+
+		context.should_not be_nil
+		context.spoken.should have(3).phrases
+		context.silent.should have(0).phrases
+		context.instructions.should have(3).instructions
+
+		#	just the inner ones
+		context.contexts.should have(2).contexts
+
+		#	hierarchical traversal
+		#		which provides a full tree, including he the outer builder
+		ids = []
+		traverse = lambda do |ctx|
+			ids << ctx.builder.id
+			ctx.contexts.each {|sub| traverse.call(sub) }
+		end
+		traverse.call(context)
+
+		ids.should have(5).ids
+		ids.should eql([:outer, :inner_1, :inner_2, :deep_1, :deep_2 ])
+	end
+
 end

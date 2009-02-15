@@ -9,18 +9,22 @@ describe MadderLib::Sequencer do
 
 		sequencer = (madderlib do
 			#	takes context, uses data, get and set local scope
+			#	multiple are handled sequentially
 			setup {|context| context.data[:word] = holder.pop }
+			setup {|context| holder << :setup }
 
 			#	takes context
 			say {|context| context.data[:word] }
 
 			#	doesn't need context, set local scope
+			#	multiple are handled sequentially
 			teardown { holder << :teardown }
+			teardown { holder << :twice }
 		end).to_sequencer
 
 		sequencer.words.should eql(%w{ setup })
-		holder.should have(1).item
-		holder.first.should equal(:teardown)
+		holder.should have(3).item
+		holder.should eql([:setup, :teardown, :twice])
 	end
 
 

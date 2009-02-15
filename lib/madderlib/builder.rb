@@ -12,6 +12,7 @@ module MadderLib
 			@id = id
 			@phrases, @phrase_ids = [], []
 			@ordered, @depends = [], []
+			@setup, @teardown = [], []
 			@meta = {}
 
 			self.extend &block if block_given?
@@ -55,12 +56,12 @@ module MadderLib
 
 		def setup(&block)
 			Context.validate(block)
-			@setup = block
+			@setup << block
 		end
 
 		def teardown(&block)
 			Context.validate(block)
-			@teardown = block
+			@teardown << block
 		end
 
 
@@ -145,17 +146,18 @@ module MadderLib
 		alias :each :each_word
 
 		#	returns the words from the sequencer
-		def words
+		def words(&block)
 			#	a new Sequencer each time
+			#		pass on the block, to pull in the context
 			#	TODO: optimize
 			#		dirty flag is hard since phrases is exposed
 			#		hashsum?  clone of last known phrases PLUS dirty flag?
-			self.to_sequencer.words
+			self.to_sequencer.words &block
 		end
 		alias :to_a :words
 
-		def sentence(separator=' ')
-			self.words.join(separator)
+		def sentence(separator=' ', &block)
+			self.words(&block).join(separator)
 		end
 		alias :to_s :sentence
 

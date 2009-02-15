@@ -55,7 +55,11 @@ module MadderLib
 		class << self
 			def wordify(source, context)
 				#	our own dogfood
-				return source.words if Builder === source
+				if Builder === source
+					#	build the words
+					#	pull back and track the context
+					return source.words {|sub_context| context.contexts << sub_context }
+				end
 
 				if (Proc === source)
 					#	evaluate
