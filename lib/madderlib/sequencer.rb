@@ -31,16 +31,12 @@ module MadderLib
 		#	returns each word in the sequence
 		def words(&block)
 			#	sequence the phrases
-			nodes, context = self.sequence
+			#		*sigh* verb and a noun
+			nodes = sequence &block
 
 			#	composite the words
 			#		each node contains an array of words
-			composite = nodes.collect {|node| node.words }.flatten
-
-			#	dispatch back the context
-			yield context if block_given?
-
-			composite
+			nodes.collect {|node| node.words }.flatten
 		end
 
 		#	iterates over each word in the sequence
@@ -49,20 +45,29 @@ module MadderLib
 		end
 		alias :each :each_word
 
+		#	iterates over each word in the sequence
+		def phrases(&block)
+			#	sequence the phrases
+			#		*sigh* verb and a noun
+			nodes = sequence &block
+
+			#	only care about the phrases
+			nodes.collect {|node| node.phrase }
+		end
+
 		#	returns each phrase in the sequence
-		def each_phrase
-			nodes, context = self.sequence
-			nodes.each {|node| yield node.phrase }
+		def each_phrase(&block)
+			self.phrases.each {|phrase| yield phrase }
 		end
 
 
 
 		#	- - - - -
-		private
+		protected
 
 		RESULT_NODE = Struct.new(:phrase, :words, :before, :after )
 
-		def sequence
+		def sequence(&block)
 			#	this is where we do all the sequencing
 			#	each phrase gets invoked, and any words it returns are used
 			#	if no words are returned, it's skipped
@@ -70,6 +75,9 @@ module MadderLib
 			#		same logic for each before / after as above
 			#	then, pepper in the anytimes, including boundaries, etc
 			context = Context.new(self)
+
+			#	one-shot dispatch
+			Context.invoke(block, context) if block_given?
 
 			if (@setup)
 				#	dispatch to each block
@@ -225,7 +233,7 @@ module MadderLib
 				@teardown.each {|block| Context.invoke(block, context) }
 			end
 
-			return flattened, context
+			flattened
 		end
 
 		def traverse(phrase, context)

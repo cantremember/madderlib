@@ -54,14 +54,30 @@ module MadderLib
 
 
 
-		def setup(&block)
+		def setup(*args, &block)
 			Context.validate(block)
-			@setup << block
+
+			#	ordering
+			if args.include?(:first)
+				@setup.unshift block
+			else
+				@setup.push block
+			end
+
+			self
 		end
 
-		def teardown(&block)
+		def teardown(*args, &block)
 			Context.validate(block)
-			@teardown << block
+
+			#	ordering
+			if args.include?(:first)
+				@teardown.unshift block
+			else
+				@teardown.push block
+			end
+
+			self
 		end
 
 

@@ -3,6 +3,7 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 
 
 describe MadderLib::Builder, "to Sequencer" do
+
 	it "turns an empty builder into an empty sequencer" do
 		sequencer = MadderLib::Builder.new.to_sequencer
 
@@ -249,6 +250,35 @@ describe MadderLib::Builder, "to Sequencer" do
 		marks.should eql(%w{ imaginary random })
 	end
 
+
+
+	it "supports setup and teardown blocks" do
+		holder = []
+
+		sequencer = (madderlib do
+			#	takes context, uses data, get and set local scope
+			#	multiple are handled sequentially
+			setup {|context| holder << :setup }
+			setup {|context| context.data[:word] = holder.first }
+			setup {|context| holder << :a_s }
+			setup(:first) {|context| holder << :b_s }
+
+			#	takes context
+			say {|context| context.data[:word] }
+
+			#	doesn't need context, set local scope
+			#	multiple are handled sequentially
+			teardown { holder << :teardown }
+			teardown(:first) { holder << :b_t }
+			teardown { holder << :a_t }
+		end).to_sequencer
+
+		#	due to execution sequence...
+		sequencer.words.should eql(%w{ b_s })
+
+		holder.should eql([:b_s, :setup, :a_s, :b_t, :teardown, :a_t])
+	end
+
 	it "can collect the executed context" do
 		builder = madderlib :outer do
 			say madderlib(:inner_1) { say 'inner' }
@@ -261,10 +291,19 @@ describe MadderLib::Builder, "to Sequencer" do
 			}
 		end
 
-		context = nil
-		words = builder.words {|ctx| context = ctx }
+		#	capture the context
+		#		setup or teardown, not important
+		context, count = nil, 0
+		words = builder.words do |ctx|
+			context = ctx
+			count = ctx.spoken
+		end
 		words.should eql(%w{ inner plain deep deeper })
 
+		#	it'll be called before the context is used
+		spoken.should eql(0)
+
+		#	and here's what you get back
 		context.should_not be_nil
 		context.spoken.should have(3).phrases
 		context.silent.should have(0).phrases

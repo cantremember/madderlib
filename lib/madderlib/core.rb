@@ -63,7 +63,20 @@ module MadderLib
 			srand(Time.now.to_i)
 		end
 
-		def add(builder)
+		def add(*args, &block)
+			builder = args.first
+
+			case builder
+				when Builder
+					#	leave it alone
+				when nil
+					#	new, with block dispatched
+					builder = Builder.new &block
+				else
+					#	new, assume the arg is an ID
+					builder = Builder.new args.first, &block
+			end
+
 			unless @builders.include?(builder)
 				@builders << builder
 

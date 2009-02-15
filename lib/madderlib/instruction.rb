@@ -57,7 +57,7 @@ module MadderLib
 				#	our own dogfood
 				if Builder === source
 					#	build the words
-					#	pull back and track the context
+					#		pull back and track the context
 					return source.words {|sub_context| context.contexts << sub_context }
 				end
 

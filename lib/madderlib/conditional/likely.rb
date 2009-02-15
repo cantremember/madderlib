@@ -34,7 +34,7 @@ module MadderLib
 							#	choose a random value
 							state = context.state(phrase)
 							state[:likely_total] = total
-							state[:likely_count] = rand(total)
+							state[:likely_count] = rand(total) # Range.new(0, total).rand_inclusive
 						end
 					end
 				end
