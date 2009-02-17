@@ -279,6 +279,8 @@ describe MadderLib::Builder, "to Sequencer" do
 		holder.should eql([:b_s, :setup, :a_s, :b_t, :teardown, :a_t])
 	end
 
+
+
 	it "can collect the executed context" do
 		builder = madderlib :outer do
 			say madderlib(:inner_1) { say 'inner' }
@@ -309,15 +311,27 @@ describe MadderLib::Builder, "to Sequencer" do
 		context.silent.should have(0).phrases
 		context.instructions.should have(3).instructions
 
-		#	just the inner ones
-		context.contexts.should have(2).contexts
+		#	the :flat approach (default)
+		context.contexts.should have(4).contexts
+
+		#	just the sub-contexts, not the outer builder
+		ids = []
+		context.contexts.each {|ctx| ids << ctx.builder.id }
+
+		ids.should have(4).ids
+		ids.should eql([ :inner_1, :inner_2, :deep_1, :deep_2 ])
+
+		#	the :tree approach
+		#		just the inner ones
+		context.contexts(:tree).should have(2).contexts
 
 		#	hierarchical traversal
-		#		which provides a full tree, including he the outer builder
+		#		this traversal provides a full tree
+		#		including he the outer builder
 		ids = []
 		traverse = lambda do |ctx|
 			ids << ctx.builder.id
-			ctx.contexts.each {|sub| traverse.call(sub) }
+			ctx.contexts(:tree).each {|sub| traverse.call(sub) }
 		end
 		traverse.call(context)
 

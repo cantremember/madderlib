@@ -13,7 +13,8 @@ module MadderLib
 			@phrase = phrase
 
 			@words = []
-			args.each {|arg| @words << arg unless arg.nil? }
+			#	skip nil or blank string
+			args.each {|arg| @words << arg unless arg.nil? || ('' == arg) }
 			@words << block if block_given?
 		end
 
@@ -58,7 +59,7 @@ module MadderLib
 				if Builder === source
 					#	build the words
 					#		pull back and track the context
-					return source.words {|sub_context| context.contexts << sub_context }
+					return source.words {|sub_context| context.add_context sub_context }
 				end
 
 				if (Proc === source)

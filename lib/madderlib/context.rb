@@ -5,7 +5,6 @@ module MadderLib
 		attr_reader :silent
 		attr_reader :spoken_ids
 		attr_reader :instructions
-		attr_reader :contexts
 		attr_reader :data
 
 		def initialize(sequencer)
@@ -23,6 +22,29 @@ module MadderLib
 			hash = @state[key]
 			@state[key] = hash = {} unless hash
 			hash
+		end
+
+		def contexts(mode=nil)
+			mode ||= :flat
+
+			if mode == :flat
+				queue, ctxs = @contexts.clone, []
+				while (ctx = queue.shift)
+					#	myself
+					ctxs << ctx
+					#	all my children
+					queue += ctx.contexts
+				end
+
+				ctxs
+			else
+				#	only the ones for our immediate children
+				@contexts
+			end
+		end
+
+		def add_context(context)
+			@contexts << context
 		end
 
 
