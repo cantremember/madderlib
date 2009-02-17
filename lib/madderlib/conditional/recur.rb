@@ -27,14 +27,8 @@ module MadderLib
 						state[:recur_count] = count + 1
 
 						#	the block call returns the result of our test
-						case block.arity
-							when 0
-								block.call
-							when 1
-								block.call(count)
-							else
-								block.call(count, context)
-						end
+						#		we buffered the block, but want to invoke it conveniently
+						phrase.conditional_recur_tester.invoke(count, context, &block)
 					end
 				end
 

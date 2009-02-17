@@ -11,10 +11,20 @@ module MadderLib
 
 		def initialize(phrase, *args, &block)
 			@phrase = phrase
-
 			@words = []
-			#	skip nil or blank string
-			args.each {|arg| @words << arg unless arg.nil? || ('' == arg) }
+
+			args.each do |arg|
+				#	skip nil or blank string
+				next if arg.nil? || ('' == arg)
+
+				#	don't just wanna do an args.flatten
+				if Array === arg
+					@words += arg
+				else
+					@words << arg
+				end
+			end
+
 			@words << block if block_given?
 		end
 

@@ -53,14 +53,16 @@ describe MadderLib::Conditional::Repeat do
 		end
 	end
 
-	it "supports arbitrary repeating" do
+
+
+	it "supports arbitrary repeating, simple boolean tests" do
 		men = [:fred, :barney]
 		women = [:wilma, :betty]
 
 		builder = madderlib :repeat_exhausting do
 			say(:intro)
-			a(:man).says { men.shift }.repeat { ! men.empty?}
-			a(:woman).says { women.shift }.while { ! women.empty?}
+			a(:man).says { men.shift }.repeat { ! men.empty? }
+			a(:woman).says { women.shift }.while { ! women.empty? }
 		end
 
 		builder.words.should eql(%w{ intro fred barney wilma betty })

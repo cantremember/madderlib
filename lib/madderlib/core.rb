@@ -84,6 +84,8 @@ module MadderLib
 				id = builder.id
 				(@builder_map[id] = builder) if id
 			end
+
+			builder
 		end
 		alias :<< :add
 

@@ -36,17 +36,9 @@ module MadderLib
 
 					#	keep speaking until we're told to stop
 					composite, count = [], 0
-					block = @repeat_tester.block
 
 					loop do
-						case block.arity
-							when 0
-								break unless block.call
-							when 1
-								break unless block.call(count)
-							else
-								break unless block.call(count, context)
-						end
+						break unless @repeat_tester.invoke(count, context)
 
 						words = pre_repeat_speak(context)
 						break if words.empty?

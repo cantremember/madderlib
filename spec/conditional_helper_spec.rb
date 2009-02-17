@@ -22,6 +22,9 @@ describe MadderLib::Conditional::Helper do
 		built = tester.block
 
 		built.call(0).should be_true		built.call(1).should_not be_true
+
+		tester.invoke(0, :ignore).should be_true
+		tester.invoke(1, :ignore).should_not be_true
 	end
 
 	it "a TestBlock with a fixed limit" do
@@ -31,6 +34,9 @@ describe MadderLib::Conditional::Helper do
 
 		built.call(1).should be_true
 		built.call(2).should_not be_true
+
+		tester.invoke(1, :ignore).should be_true
+		tester.invoke(2, :ignore).should_not be_true
 	end
 
 	it "a TestBlock with a Range" do
@@ -43,6 +49,9 @@ describe MadderLib::Conditional::Helper do
 			built.call(4).should_not be_true
 		end
 
+		tester.invoke(1, :ignore).should be_true
+		tester.invoke(4, :ignore).should_not be_true
+
 		tester = MadderLib::Conditional::Helper::TestBlock.new(Range.new(3, 5))
 
 		pound_on do
@@ -51,7 +60,12 @@ describe MadderLib::Conditional::Helper do
 			built.call(2).should be_true
 			built.call(5).should_not be_true
 		end
+
+		tester.invoke(2, :ignore).should be_true
+		tester.invoke(5, :ignore).should_not be_true
 	end
+
+
 
 	it "a TestBlock in minutes" do
 		tester = MadderLib::Conditional::Helper::TestBlock.new(1, :minute)
@@ -73,6 +87,8 @@ describe MadderLib::Conditional::Helper do
 		end
 	end
 
+
+
 	it "can convert a TestBlock criterion into an integer" do
 		context = MadderLib::Context::EMPTY
 
@@ -92,4 +108,22 @@ describe MadderLib::Conditional::Helper do
 		tester = MadderLib::Conditional::Helper::TestBlock.new {|context| context.data[:value] }
 		tester.to_i(context).should eql(5)
 	end
+
+	it "invokes the contained block, or one explicitly provided" do
+		#	arity < 1
+		tester = MadderLib::Conditional::Helper::TestBlock.new { 2 }
+		tester.invoke.should eql(2)
+		tester.invoke { 0 }.should eql(0)
+
+		#	arity = 1
+		tester = MadderLib::Conditional::Helper::TestBlock.new {|value| value + 1 }
+		tester.invoke(1).should eql(2)
+		tester.invoke(1) {|value| value - 1 }.should eql(0)
+
+		#	arity = 2, discard ignored
+		tester = MadderLib::Conditional::Helper::TestBlock.new {|a, b| a + b }
+		tester.invoke(1, 1, :ignored).should eql(2)
+		tester.invoke(1, 1, :ignored) {|a, b| a - b }.should eql(0)
+	end
+
 end

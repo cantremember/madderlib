@@ -74,6 +74,25 @@ module MadderLib
 					end
 				end
 
+				def invoke(*args, &given_block)
+					#	take in a block, or use the internally held one
+					#		allows for external buffering
+					b = block_given? ? given_block : self.block
+					p = args
+
+					if b.arity < 1
+						#	how interesting!  arity of -1
+						b.call
+					else
+						#	only as many args as supported
+						#		do not worry about shortfall; that'll be a failure
+						p.pop while b.arity < p.size
+						b.call *p
+					end
+				end
+
+
+
 				def to_i(context)
 					value = nil
 

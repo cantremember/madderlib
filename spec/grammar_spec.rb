@@ -79,16 +79,18 @@ describe MadderLib::Grammar do
 	it "has many ways to add a Builder" do
 		grammar = @class.new
 
-		grammar.add MadderLib::Builder.new :explicit
-		builder = grammar.builders.last
+		builder = grammar.add MadderLib::Builder.new :explicit
+		builder.should equal(grammar.builders.last)
+
 		builder.id.should equal(:explicit)
 		grammar.add(:implicit) { say('implicit') }
 		builder = grammar.builders.last
 		builder.id.should equal(:implicit)
 		builder.to_s.should eql('implicit')
 
-		grammar.add { say('no-id') }
-		builder = grammar.builders.last
+		builder = grammar.add { say('no-id') }
+		builder.should equal(grammar.builders.last)
+
 		builder.id.should be_nil
 		builder.to_s.should eql('no-id')
 	end
