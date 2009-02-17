@@ -1,10 +1,10 @@
 class Range
 	def rand(precision=0)
-		rand_from self.min, self.max, 0
+		rand_from self.min, self.max, precision
 	end
 
 	def rand_inclusive(precision=0)
-		rand_from self.min, self.max + 1, 0
+		rand_from self.min, self.max + 1, precision
 	end
 
 	#	- - - - -

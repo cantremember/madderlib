@@ -296,12 +296,12 @@ describe MadderLib::Builder, "to Sequencer" do
 		context, count = nil, 0
 		words = builder.words do |ctx|
 			context = ctx
-			count = ctx.spoken
+			count = ctx.spoken.size
 		end
 		words.should eql(%w{ inner plain deep deeper })
 
 		#	it'll be called before the context is used
-		spoken.should eql(0)
+		count.should eql(0)
 
 		#	and here's what you get back
 		context.should_not be_nil

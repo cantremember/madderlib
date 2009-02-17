@@ -18,16 +18,17 @@ describe Range do
 		#	trial by fire
 		[Range.new(1, 3), Range.new(-1, 5)].each do |range|
 			span = [range.min, range.max]
-			Range.new(0, 4).each do |precision|
+			#	high precision, to increase remainder likelihood
+			[0, 5].each do |precision|
 				pound_on do
 					#	exclusive
 					value = range.rand(precision)
-					value.integer?.should be_true if (precision == 0)
+					(value.to_f == value.to_i.to_f).should equal(precision == 0)
 					value.should satisfy {|v| (v >= span.min) && (v < span.max) }
 
 					#	inclusive
 					value = range.rand_inclusive(precision)
-					value.integer?.should be_true if (precision == 0)
+					(value.to_f == value.to_i.to_f).should equal(precision == 0)
 					value.should satisfy {|v| (v >= span.min) && (v < (span.max + 1)) }
 				end
 			end
