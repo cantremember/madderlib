@@ -34,22 +34,32 @@ describe MadderLib::Instruction do
 
 
 	it "can convert phrase results into words" do
+		#	simple values, and a Proc
 		words = ['one', :two, lambda { 3 }].collect do |value|
 			MadderLib::Instruction.wordify(value, MadderLib::Context::EMPTY)
 		end
 
 		words.should eql(%w{ one two 3 })
 
+		#	arrays are stringified but retained
+		words = [:a, [:b, :c], lambda { [:d, :e] }].collect do |value|
+			MadderLib::Instruction.wordify(value, MadderLib::Context::EMPTY)
+		end
+
+		words.should eql(['a', ['b', 'c'], ['d', 'e']])
+
 		builder = madderlib do
 			say 'one'
 			say :two
 			say { 3 }
+			say 'd', :e
+			say { ['f', :g] }
 		end
-		builder.words.should eql(%w{ one two 3 })
+		builder.words.should eql(%w{ one two 3 d e f g })
 
-		words =  MadderLib::Instruction.wordify(builder, MadderLib::Context::EMPTY)
-		words.should have(3).words
-		words.should eql(%w{ one two 3 })
+		words = MadderLib::Instruction.wordify(builder, MadderLib::Context::EMPTY)
+		words.should have(7).words
+		words.should eql(%w{ one two 3 d e f g })
 	end
 
 end

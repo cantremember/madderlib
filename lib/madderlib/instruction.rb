@@ -48,7 +48,13 @@ module MadderLib
 			#		that way we eliminate the nils before my caller sees them
 			words.inject([]) do |a, word|
 				word = self.class.wordify(word, context)
-				a << word if word
+
+				if Array === word
+					a += word
+				elsif word
+					a << word
+				end
+
 				a
 			end
 		end
@@ -73,13 +79,17 @@ module MadderLib
 				end
 
 				if (Proc === source)
-					#	evaluate
+					#	evaluate, then wordify the result
 					source = Context.invoke(source, context)
-				elsif (Builder === source)
-					source = source
 				end
 
-				(String === source ? source : source.to_s)
+				if (Array === source)
+					source = source.collect {|s| s.to_s }
+				elsif ! (String === source)
+					source = source.to_s
+				end
+
+				source
 			end
 		end
 	end

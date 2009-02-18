@@ -35,3 +35,13 @@ describe Range do
 		end
 	end
 end
+
+describe Array do
+	it "has to_byte_s, which requires all integers" do
+		(lambda { [32, 32, '32'].to_byte_s }).should raise_error
+	end
+
+	it "has to_byte_s" do
+		[32, 32, 32].to_byte_s.should eql(' ' * 3)
+	end
+end

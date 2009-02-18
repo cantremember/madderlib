@@ -24,3 +24,11 @@ class Range
 		end
 	end
 end
+
+
+
+class Array
+	def to_byte_s
+		self.collect {|c| c.chr }.join(nil)
+	end
+end
