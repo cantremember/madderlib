@@ -117,13 +117,11 @@ module MadderLib
 				#	- - - - -
 				protected
 
-				MINUTE_MULTIPLIER = 3
-
 				def unitize(limit)
 					case @units
 						when :minutes, :minute
-							#	a crude hack, for literal Conet building
-							limit * MINUTE_MULTIPLIER
+							#	no diff, for now
+							limit
 						when :times, :time
 							limit
 						else
