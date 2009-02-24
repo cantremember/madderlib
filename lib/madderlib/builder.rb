@@ -451,8 +451,8 @@ module MadderLib
 		end
 		alias :says :say
 
-		#A shorthand method for phrase.or .
-		#The Phrase#or method is invoked against the current Phrase with the arguments provided.
+		#A shorthand method for phrase.alternately .
+		#The Phrase#alternately method is invoked against the current Phrase with the arguments provided
 		#
 		#An Error will be raised if there is no current Phrase.
 		#It's an easy condition to recover from, but it's bad use of the syntax.

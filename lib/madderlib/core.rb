@@ -73,7 +73,7 @@ module MadderLib
 
 	#= Grammar
 	#
-	#A class for registering Builders as they are constructed.
+	#A class for registering MadderLib Builders.
 	#
 	#It is intended to help de-couple Ruby scripts which generate Builders from those which use them.
 	class Grammar

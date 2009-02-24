@@ -344,4 +344,43 @@ describe MadderLib, "tests from the documentation" do
 		grammar[:id].should equal(builder)
 	end
 
+
+
+	it "Instruction.speak" do
+		builder = madderlib do
+			say nil
+			say ''
+		end
+		builder.words.should eql([])
+
+		builder = madderlib do
+			say 'one'
+			say :two
+			say 3
+		end
+		builder.words.should eql(%w{ one two 3 })
+
+		builder = madderlib do
+			say []
+			say [ nil, 'one' ]
+			say [ :two, [ '', 3 ]]
+		end
+		builder.words.should eql(%w{ one two 3 })
+
+		builder = madderlib do
+			say madderlib { say 'one' }
+			say madderlib {
+				say madderlib { say :two }
+				say madderlib { say 3 }
+			}
+		end
+		builder.words.should eql(%w{ one two 3 })
+
+		words = [ 'one', lambda { :two }, madderlib { say 3 } ]
+		builder = madderlib do
+			say { words.shift }.repeat { ! words.empty? }
+		end
+		builder.words.should eql(%w{ one two 3 })
+	end
+
 end

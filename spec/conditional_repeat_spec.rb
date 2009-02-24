@@ -71,4 +71,18 @@ describe MadderLib::Conditional::Repeat do
 		builder.words.should eql(%w{ intro })
 	end
 
+
+
+	it "stops repeating after getting a nil value" do
+		values = [ :a, :b, nil, :c, :d, '', :e, :f ]
+		builder = madderlib :repeat_exhausting do
+			say { values.shift }.repeat { ! values.empty? }
+		end
+
+		builder.words.should eql(%w{ a b })
+		builder.words.should eql(%w{ c d })
+		builder.words.should eql(%w{ e f })
+		builder.words.should eql([])
+	end
+
 end
