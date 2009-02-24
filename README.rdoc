@@ -16,6 +16,9 @@ The steps involved are to:
 
 A simple example would be:
 
+  require 'rubygems'
+  require 'madderlib'
+
   puts madderlib {
     say 'hello,'
     say('welcome to').or.say("you're viewing")
