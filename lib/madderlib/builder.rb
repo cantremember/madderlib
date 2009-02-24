@@ -51,6 +51,9 @@ module MadderLib
 		#The id is optional.
 		#When a block is provided, it is used to extend the new (empty) Builder
 		#
+		#The new Builder is not automatically added to the active Grammar.
+		#That is the responsibility of the caller
+		#
 		#Examples:
 		#  builder = MadderLib::Builder.new
 		#  builder.id.should be_nil
@@ -106,7 +109,6 @@ module MadderLib
 
 		#Creates a deep-clone of the builder.
 		#You can extend the new builder's Phrases, or add new setup blocks, without impacting the original.
-		#The clone is added to the active Grammar.
 		#
 		#Note that the two builders will share the same <i>original</i> Phrase list.
 		#If you modify one of them behind-the-scenes, that change will be shared by <i>both</i> builders.
@@ -152,7 +154,8 @@ module MadderLib
 
 			#	put it into the grammar
 			#		most importantly,
-			Grammar.get_instance.add o
+			grammar = Grammar.get_instance
+			grammar.add o if grammar.builders.include?(self)
 			o
 		end
 

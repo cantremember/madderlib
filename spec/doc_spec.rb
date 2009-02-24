@@ -265,5 +265,83 @@ describe MadderLib, "tests from the documentation" do
 		lambda { MadderLib::Context::EMPTY.state(:immutable) }.should raise_error TypeError
 		lambda { MadderLib::Context::EMPTY[:immutable] = true }.should raise_error TypeError
 	end
-end
 
+
+
+	it "KernelMethods.madderlib" do
+		builder = madderlib do
+			say 'no id'		end
+		madderlib_grammar.builders.include?(builder).should be_true
+		madderlib_grammar.builder_map.values.include?(builder).should_not be_true
+
+		builder = madderlib :id do
+			say 'has id'
+		end
+		madderlib_grammar.builders.include?(builder).should be_true
+		madderlib_grammar.builder_map.values.include?(builder).should be_true
+	end
+
+	it "KernelMethods.madderlib" do
+		builder = madderlib do
+			say 'no id'
+		end
+		madderlib_grammar.builders.include?(builder).should be_true
+		madderlib_grammar.builder_map.values.include?(builder).should_not be_true
+
+		builder = madderlib :id do
+			say 'has id'
+		end
+		madderlib_grammar.builders.include?(builder).should be_true
+		madderlib_grammar.builder_map.values.include?(builder).should be_true
+	end
+
+
+
+	it "Grammar.new_instance" do
+		current = MadderLib::Grammar.new_instance
+		current.should have(0).builders
+		current.should equal(MadderLib::Grammar.get_instance)
+
+		one = madderlib { say 'one' }
+		current.should have(1).builders
+		current.builders.include?(one).should be_true
+
+		fresh = MadderLib::Grammar.new_instance
+		fresh.should equal(MadderLib::Grammar.get_instance)
+
+		two = madderlib { say 'two' }
+		fresh.should have(1).builders
+		fresh.builders.include?(two).should be_true
+
+		current.should_not equal(MadderLib::Grammar.get_instance)
+		current.builders.include?(two).should_not be_true
+	end
+
+	it "Grammar.add" do
+		grammar = MadderLib::Grammar.new_instance
+
+		builder = madderlib { say 'exists' }
+		x = grammar.add(builder)
+		x.should equal(builder)
+		grammar.should have(1).builders
+		grammar.builder_map.should have(0).keys
+
+		builder = grammar.add { say 'no id' }
+		grammar.should have(2).builders
+		grammar.builder_map.should have(0).keys
+		builder.sentence.should eql('no id')
+
+		builder = grammar << :id
+		grammar.should have(3).builders
+		grammar.builder_map.values.include?(builder).should be_true
+		builder.sentence.should eql('')
+	end
+
+	it "Grammar.builder_map accessors" do
+		grammar = MadderLib::Grammar.new_instance
+
+		builder = grammar.add(:id) { say 'has id' }
+		grammar[:id].should equal(builder)
+	end
+
+end

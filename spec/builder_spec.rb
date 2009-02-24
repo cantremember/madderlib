@@ -295,6 +295,19 @@ describe MadderLib::Builder, "building" do
 		metas.should have(0).items
 	end
 
+	it "adds the clone to the active Grammar if its original is there" do
+		grammar = MadderLib::Grammar.get_instance
+
+		original = MadderLib::Builder.new
+		grammar.builders.include?(original).should_not be_true
+
+		cloned = original.clone		grammar.builders.include?(cloned).should_not be_true
+
+		grammar.add original
+		added = original.clone
+		grammar.builders.include?(added).should be_true
+	end
+
 
 
 	it "holds metadata for you" do

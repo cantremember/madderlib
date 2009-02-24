@@ -74,6 +74,9 @@ describe MadderLib::Grammar do
 		#	does not impact the one we locked down
 		held.builders.should have(2).builders
 		[:one, :two].each {|key| held.builder_map[key].should_not be_nil }
+
+		#	sorry, you're frozen
+		lambda { held.add :anything }.should raise_error TypeError
 	end
 
 	it "has many ways to add a Builder" do
