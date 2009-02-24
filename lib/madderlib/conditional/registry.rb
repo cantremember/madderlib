@@ -1,6 +1,6 @@
 module MadderLib
 	module Conditional
-		module Registry
+		module Registry #:nodoc: all
 
 			module Static
 				#	registers a preparation closure for the container

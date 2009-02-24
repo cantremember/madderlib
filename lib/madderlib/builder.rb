@@ -289,7 +289,7 @@ module MadderLib
 		alias :then :and_then
 
 		#Allocates another Phrase, where an id is required.
-		#This is semantic sugar.
+		#This is semantic sugar
 		#
 		#Examples:
 		#  builder = MadderLib::Builder.new do

@@ -1,10 +1,29 @@
 module MadderLib
 	module Conditional
+		#= Likely
+		#
+		#Introduces support for proportional selection from multiple Instructions in a given Phrase
 		module Likely
+			#The default weight for an Instruction, which is 1
 			DEFAULT_WEIGHT = 1
 
+			#= Likely::Phrase
+			#
+			#Introduces support for proportional selection from multiple Instructions in a given Phrase
+			#
+			#This is a very fancy way of saying 'weighted choices'.
+			#Using Phrase#alternately, multiple Instructions can be added to the same Phrase.
+			#Each one will either use the DEFAULT_WEIGHT, if not otherwise specified, or:
+			#
+			#* a numeric value
+			#* a Proc / lambda / block / closure which returns a numeric value
+			#
+			#The weights for all Instructions are totalled prior to each execution of the Builder.
+			#A random weight is chosen, and that defines the Instruction to be used
+			#
+			#See:  Likely::Instruction
 			module Phrase
-				def self.included(target)
+				def self.included(target) #:nodoc:
 					#	before each run, we need to prepare ourself
 					target.add_prepare do |phrase, context|
 						#	no point in likelihood when there's only one choice
@@ -41,7 +60,9 @@ module MadderLib
 
 
 
-				# proxy to current instruction
+				#Adds proportional logic to the current Instruction
+				#
+				#See:  Instruction#likely
 				def likely(*args, &block)
 					self.instruction.likely *args, &block
 				end
@@ -52,8 +73,13 @@ module MadderLib
 
 
 
+			#= Likely::Instruction
+			#
+			#Introduces support for proportional selection from multiple Instructions in a given Phrase
+			#
+			#See:  Likely::Phrase
 			module Instruction
-				def self.included(target)
+				def self.included(target) #:nodoc:
 					#	register a test to test all allowances for the instruction
 					#		return false at the first one that fails
 					target.add_test do |instruction, context|
@@ -85,6 +111,34 @@ module MadderLib
 
 
 
+				#Specifies the likelihood of this Instruction being used, compared to its siblings in their Phrase
+				#
+				#If provided, the arguments should contain:
+				#* a numeric value, which becomes the weight
+				#* a Range, or two numerics (which define a Range), from which the weight is chosen randomly
+				#* a Proc / lambda / block / closure, which returns a numeric value. \
+				#The block can either take no arguments, or a Context.
+				#
+				#See:  Instruction#alternately
+				#
+				#Examples:
+				#  builder = madderlib do
+				#    say('parsley').likely(4)
+				#    alternately(3).say('sage')
+				#    alternately.say('rosemary').weighted(2).or.say('thyme')
+				#  end
+				#
+				#  usage = {}
+				#  60.times do
+				#    key = builder.sentence
+				#    usage[key] = (usage[key] || 0) + 1
+				#  end
+				#
+				#  #  if proportions were accurately reproducible:
+				#  #    usage['parsley'].should eql(20)
+				#  #    usage['sage'].should eql(15)
+				#  #    usage['rosemary'].should eql(10)
+				#  #    usage['thyme'].should eql(5)
 				def likely(*args, &block)
 					#	build a tester, set it aside
 					@likely_tester = Helper::TestBlock.new *args, &block
@@ -92,10 +146,11 @@ module MadderLib
 				end
 				alias :weight :likely
 				alias :weighted :likely
+				alias :weighing :likely
 
 
 
-				def conditional_likely_tester
+				def conditional_likely_tester #:nodoc:
 					@likely_tester
 				end
 			end

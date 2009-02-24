@@ -1,6 +1,6 @@
 module MadderLib
 	module Conditional
-		module Helper
+		module Helper #:nodoc: all
 
 			class TestBlock
 				FALSE = lambda { false }

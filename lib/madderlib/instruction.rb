@@ -13,9 +13,10 @@ module MadderLib
 	#* another Builder
 	#* an Array of the above
 	#
-	#The logic by which these types are resolved is described within wordify .
+	#The logic by which these Object types are resolved is described within wordify .
 	#
 	#An Instruction also supports:
+	#
 	#* repetition, via Conditional::Repeat
 	#* conditional usage, via Conditional::Allowed
 	#* proportionate usage, via Conditional::Likely

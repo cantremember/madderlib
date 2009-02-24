@@ -383,4 +383,167 @@ describe MadderLib, "tests from the documentation" do
 		builder.words.should eql(%w{ one two 3 })
 	end
 
+
+
+	it "Phrase.alternately" do
+		builder = madderlib do
+			say('barnard').or.say('bryn mawr')
+			alternately(2).say('mount holyoke').alternately(2).say('radcliffe')
+			it.alternately(4).says('smith').or(4).says('vassar')
+		end
+		builder.phrase.says('wellesley').or(5).nothing
+
+		usage = {}
+		200.times do
+			key = builder.sentence
+			usage[key] = (usage[key] || 0) + 1
+		end
+
+		#	if proportions were accurately reproducible:
+		#		['barnard', 'bryn mawr', 'wellesley'].each {|name| usage[name].should eql(10) }
+		#		['mount holyoke', 'radcliffe'].each {|name| usage[name].should eql(20) }
+		#		['smith', 'vassar'].each {|name| usage[name].should eql(40) }
+		#		[''].each {|name| usage[name].should eql(50) }
+	end
+
+
+
+	it "AnywherePhrase.before" do
+		flag = true
+		builder = madderlib do
+			say 'top'
+			also(:limit).say('middle').if { flag }
+			say 'bottom'
+
+			anywhere.say('hello').before(:limit)
+		end
+
+		10.times do
+			words = builder.words
+			words.index('hello').should eql(1)
+		end
+
+		flag = false
+		10.times do
+			words = builder.words
+			(words.index('hello') < 2).should be_true
+		end
+	end
+
+	it "AnywherePhrase.before" do
+		flag = true
+		builder = madderlib do
+			say 'top'
+			also(:limit).say('middle').if { flag }
+			say 'bottom'
+
+			anywhere.say('hello').after(:limit)
+		end
+
+		10.times do
+			words = builder.words
+			words.index('hello').should eql(2)
+		end
+
+		flag = false
+		10.times do
+			words = builder.words
+			(words.index('hello') > 0).should be_true
+		end
+	end
+
+	it "AnywherePhrase.between" do
+		builder = madderlib do
+			say 'top'
+			also(:upper).say('upper')
+			also(:lower).say('lower')
+			say 'bottom'
+
+			anywhere.say('hello').between(:upper, :lower)
+		end
+
+		10.times do
+			words = builder.words
+			words.index('hello').should eql(2)
+		end
+	end
+
+
+
+
+	it "Instruction.assuming" do
+		switch = false
+		builder = madderlib do
+			an(:on).says('on').assuming { switch }
+			an(:off).says('off').if { ! switch }
+			say('bright').if :on
+			say('dark').if :off
+		end
+
+		builder.sentence.should eql('off dark')
+		switch = true
+		builder.sentence.should eql('on bright')
+	end
+
+	it "Instruction.forbidding" do
+		switch = false
+		builder = madderlib do
+			an(:on).says('on').forbidding { ! switch }
+			an(:off).says('off').unless { switch }
+			say('bright').unless :off
+			say('dark').unless :on
+		end
+
+		builder.sentence.should eql('off dark')
+		switch = true
+		builder.sentence.should eql('on bright')
+	end
+
+	it "Instruction.likely" do
+		builder = madderlib do
+			say('parsley').likely(4)
+			alternately(3).say('sage')
+			alternately.say('rosemary').weighted(2).or.say('thyme')
+		end
+
+		usage = {}
+		60.times do
+			key = builder.sentence
+			usage[key] = (usage[key] || 0) + 1
+		end
+
+		#	if proportions were accurately reproducible:
+		#		usage['parsley'].should eql(20)
+		#		usage['sage'].should eql(15)
+		#		usage['rosemary'].should eql(10)
+		#		usage['thyme'].should eql(5)
+	end
+
+	it "Phrase.recurs" do
+		builder = madderlib do
+			say(:start)
+			say(:end)
+			anytime.recurring(2).say(:any)
+			anytime.recurring {|count| count < 2 }.say(:also)
+		end
+
+		words = builder.words
+		words.find_all {|word| word == 'any' }.should have(2).items
+		words.find_all {|word| word == 'also' }.should have(2).items
+	end
+
+	it "Phrase.repeat" do
+		builder = madderlib do
+			say(:twice).times(2)
+			say(:couple).repeats(1, 2)
+			say(:thrice).while {|count| count < 3 }
+		end
+
+		words = builder.words
+		words.find_all {|word| word == 'twice' }.should have(2).items
+		words.find_all {|word| word == 'thrice' }.should have(3).items
+		count = words.find_all {|word| word == 'couple' }.size
+		(count >= 1 && count <= 2).should be_true
+	end
+
 end
