@@ -2,6 +2,8 @@
 
 A Sentence-Building DSL for the easily amused.
 
+And I'm easily amused.
+
 == Overview
 
 This is a library for describing the logic for building a sentence.
