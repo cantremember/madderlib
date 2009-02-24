@@ -43,6 +43,7 @@ Gem::Specification.new do |s|
     spec/conditional_recur_spec.rb
     spec/conditional_registry_spec.rb
     spec/conditional_repeat_spec.rb
+    spec/doc_spec.rb
     spec/error_spec.rb
     spec/examples_spec.rb
     spec/extensions_spec.rb
