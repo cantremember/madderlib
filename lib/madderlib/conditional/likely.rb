@@ -69,6 +69,7 @@ module MadderLib
 				alias :weight :likely
 				alias :weighted :likely
 				alias :weighing :likely
+				alias :odds :likely
 			end
 
 
@@ -147,6 +148,7 @@ module MadderLib
 				alias :weight :likely
 				alias :weighted :likely
 				alias :weighing :likely
+				alias :odds :likely
 
 
 

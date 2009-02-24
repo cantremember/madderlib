@@ -1,1 +1,170 @@
-= MadderLib : a Sentence-Building DSL for the easily amused
+= MadderLib
+
+A Sentence-Building DSL for the easily amused.
+
+== Overview
+
+This is a library for describing the logic for building a sentence.
+Or, more specifically, for building an Array of Strings.
+
+The steps involved are to:
+
+* create a MadderLib::Builder
+* define the MadderLib::Phrase objects which will comprise the sentence
+* define one or more MadderLib::Instruction objects for each Phrase (eg. its word(s))
+* execute the Builder to produce the result
+
+A simple example would be:
+
+  puts madderlib {
+    say 'hello,'
+    say('welcome to').or.say("you're viewing")
+    say('the README.doc')
+  }.sentence
+
+Once constructed, the Builder contains all of the rules necessary to build and re-build its sentence.
+Within the builder, its Phrase and Instruction set can define:
+
+* the ordering of the Phrase
+* conditional interdependence of Phrases (eg. only say <i>X</i> if <i>Y</i> has already been said)
+* conditions for including / excluding a given Instruction (eg. only if a customer has enrolled in <i>X</i>)
+* the likelihood (odds) for choosing one Instruction over another within a given Phrase
+* how often an Instruction will repeat, if chosen
+
+And other variations along that line.
+
+Some of the more useful aspects of this library are:
+
+* the descriptive Builder syntax itself
+* a Builder, once defined, can be cloned and/or extended, allowing for re-use and re-purposing
+* extensive support for Procs / lambdas to allow for dynamic rules and content, vs. having to alter Builder logic
+
+== MadderLib::KernelMethods
+
+A small set of methods are injected into the Kernel namespace / scope for easy creation of a Builder.
+
+The most commonly used method would be madderlib; it initiates a Builder
+
+== MadderLib::Builder
+
+The Builder and its methods provides access to all of the core capabilities of the library.
+Examples are provided in the documentation.
+Some good starters are:
+
+* Builder#append (extend)
+* Builder#clone
+* Builder#phrase (it)
+* Builder#and_then (and, then, also)
+* Builder#first
+* Builder#before
+* Builder#alternately (or)
+* Builder#sentence (to_s)
+
+== MadderLib::Phrase and MadderLib::Instruction
+
+Each Phrase is a segement of the sentence, usually only a word or more.
+A Phrase is comprised of at least one Instruction, and perhaps more if there are multiple options.
+By and large, you won't even notice them as being separate from the Builder.
+
+Some good examples are:
+
+* Phrase#alternately
+* AnytimePhrase#before
+* Instruction#speak
+
+== MadderLib::Conditional
+
+These are additional aspects to the library which support various features.
+It's easiest to reference them by example:
+
+* Conditional::Allowed::Instruction#assuming (if)
+* Conditional::Likely::Instruction#likely (weight, odds)
+* Conditional::Repeat::Instruction#repeat
+* Conditional::Recur::Phrase#recur
+
+== Examples
+
+This example comes from Snake 'n' Bacon (http://wiki.cantremember.com/Twitter/SnakeAndBacon):
+
+  builder = madderlib do
+    say "i'm"
+
+    and_then
+    ['sometimes', 'always', nil].each {|word| alternately.say(word) }
+  
+    say('quite').or(2).say('rather').or(2).say('so').or.nothing
+  
+    say 'salty'
+    ['smoky', 'peppery'].each {|word| alternately(2).say(word) }
+  end
+  builder.validate
+
+  5.times { puts builder.sentence }
+
+This is one of the simpler Builders from The Conet Project (http://wiki.cantremember.com/Twitter/Conet):  
+
+  builder = madderlib do
+    meta[:audio] = [
+      'http://www.archive.org/download/ird059/tcp_d1_06_the_lincolnshire_poacher_mi5_irdial.mp3',
+      'http://www.archive.org/download/ird059/tcp_d3_02_iran_iraq_jamming_efficacy_testting_irdial.mp3',
+    ]
+
+    digits = lambda do |len|
+      s = rand(10 ** len).to_s
+      s = ('0' * (len - s.size)) + s
+      s
+    end
+
+    say 'Lincolnshire Poacher'
+    say { digits.call(5) }.repeat(10)
+
+    say('~').repeat(6)
+
+    200.times do
+      say { s = digits.call(5); [s, s] }
+    end
+
+    say('~').repeat(6)
+
+    say 'Lincolnshire Poacher'
+  end
+  builder.validate
+
+  5.times { puts builder.sentence }
+
+Here is a rather boring example, yet which is a bit more practical:
+
+  user = Struct.new(:name)
+
+  builder = madderlib do
+    setup {|context| context[:hour] ||= Time.new.hour }
+    a(:morning).says('top of the morning,').if {|c| Range.new(8, 12).include?(c[:hour]) }
+    say('good afternoon,').if {|c| Range.new(12, 17).include?(c[:hour]) }
+    say("g'night").if {|c| Range.new(19, 24).include?(c[:hour]) }
+    say {|c| c[:user].name + '.' }
+  end
+
+  puts builder.sentence {|c| c[:user] = user.new('joe')}
+
+  puts builder.sentence {|c|
+    c[:user] = user.new('fred')
+    c[:hour] = 13
+  }
+
+  extended = builder.clone.extend { say('have a nice day!').if(:morning) }
+  puts extended.sentence {|c|
+    c[:user] = user.new('charlie')
+    c[:hour] = 8
+  }
+
+== Contributing
+
+=== Issue Tracking and Feature Requests
+
+* http://madderlib.rubyforge.org
+
+== Community
+
+=== Wiki
+
+* http://wiki.cantremember.com/MadderLib

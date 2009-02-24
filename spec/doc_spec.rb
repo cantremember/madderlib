@@ -270,7 +270,8 @@ describe MadderLib, "tests from the documentation" do
 
 	it "KernelMethods.madderlib" do
 		builder = madderlib do
-			say 'no id'		end
+			say 'no id'
+		end
 		madderlib_grammar.builders.include?(builder).should be_true
 		madderlib_grammar.builder_map.values.include?(builder).should_not be_true
 
