@@ -84,8 +84,10 @@ module MadderLib
 				end
 
 				if (Array === source)
-					source = source.collect {|s| s.to_s }
-				elsif ! (String === source)
+					#	full flattening
+					source = source.flatten.collect {|s| s ? s.to_s : nil }
+				elsif source && ! (String === source)
+					#	don't stringify nil
 					source = source.to_s
 				end
 

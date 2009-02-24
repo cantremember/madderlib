@@ -6,17 +6,46 @@ describe MadderLib::Instruction do
 
 	it "'say' ignores nils" do
 		phrase = nil
+		#	no sequencer
+		context = MadderLib::Context.new(nil)
+
+		#	nil, nothing else
 		instruction = MadderLib::Instruction.new(phrase, nil)
-		instruction.words.should have(0).words		instruction = MadderLib::Instruction.new(phrase, nil, :ok)
-		instruction.words.should eql([:ok])
+		instruction.words.should have(0).words		instruction.speak(context).should eql([])
+
+		#	some counter-balancing value
+		instruction = MadderLib::Instruction.new(phrase, nil, :value)
+		instruction.words.should eql([:value])
+		instruction.speak(context).should eql(%w{ value })
+
+		#	late-evaluated nil, array test as well
+		instruction = MadderLib::Instruction.new(phrase, lambda { nil }, :proc)
+		instruction.words.should have(2).words
+		instruction.speak(context).should eql(%w{ proc })
 	end
 
 	it "'say' ignores blanks" do
 		phrase = nil
+		#	no sequencer
+		context = MadderLib::Context.new(nil)
+
+		#	blank, nothing else
 		instruction = MadderLib::Instruction.new(phrase, "")
 		instruction.words.should have(0).words
-		instruction = MadderLib::Instruction.new(phrase, :ok, '')
-		instruction.words.should eql([:ok])
+		instruction.speak(context).should eql([])
+
+		#	some counter-balancing value
+		instruction = MadderLib::Instruction.new(phrase, :value, '')
+		instruction.words.should eql([:value])
+		instruction.speak(context).should eql(%w{ value })
+
+		#	late-evaluated blank
+		#		is actually kept!  it's not known to be blank until evaluation
+		#		if the evaluation wants a blank, let it have one
+		#		if not, then it should return nil
+		instruction = MadderLib::Instruction.new(phrase, :proc, lambda { '' })
+		instruction.words.should have(2).words
+		instruction.speak(context).should eql(['proc', ''])
 	end
 
 	it "flattens Arrays" do
@@ -35,23 +64,29 @@ describe MadderLib::Instruction do
 
 	it "can convert phrase results into words" do
 		#	simple values, and a Proc
-		words = ['one', :two, lambda { 3 }].collect do |value|
+		words = ['one', :two, nil, lambda { 3 }].collect do |value|
 			MadderLib::Instruction.wordify(value, MadderLib::Context::EMPTY)
 		end
 
-		words.should eql(%w{ one two 3 })
+		words.should eql(['one', 'two', nil, '3'])
 
 		#	arrays are stringified but retained
-		words = [:a, [:b, :c], lambda { [:d, :e] }].collect do |value|
+		#		flattening within array
+		#		nil considerations are retained
+		words = [:a, [:b, [:c, nil]], lambda { [:d, :e] }].collect do |value|
 			MadderLib::Instruction.wordify(value, MadderLib::Context::EMPTY)
 		end
 
-		words.should eql(['a', ['b', 'c'], ['d', 'e']])
+		words.should eql(['a', ['b', 'c', nil], ['d', 'e']])
 
 		builder = madderlib do
 			say 'one'
 			say :two
 			say { 3 }
+			#	both ignored
+			say nil
+			say { nil }
+			#	back to real data
 			say 'd', :e
 			say { ['f', :g] }
 		end

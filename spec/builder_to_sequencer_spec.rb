@@ -339,4 +339,50 @@ describe MadderLib::Builder, "to Sequencer" do
 		ids.should eql([:outer, :inner_1, :inner_2, :deep_1, :deep_2 ])
 	end
 
+	it "can inject data into the context" do
+		builder = madderlib :inject_data do
+			say '('
+			say {|context| context[:text] }
+			say ')'		end
+
+		#	text is nil, so doesn't appear
+		builder.words.should eql(['(', ')'])
+
+		#	round trip with simple value
+		#		can't pull out the context with enumerator-based methods
+		#		but you can still inject data
+		context = nil
+
+		words = builder.words(:text => 'words') {|ctx| context = ctx }
+		context[:text].should eql('words')
+		words.should eql(['(', context[:text], ')'])
+
+		s = ''
+		builder.each_word(:text => 'each_word') {|word| s << word }
+		s.should eql('(each_word)')
+
+		#	proper handling of data / separator mixing
+		builder.sentence.should eql('( )')
+		builder.sentence(:text => 'sentence').should eql('( sentence )')
+		builder.sentence('', :text => 'sentence').should eql('(sentence)')
+		map = { :text => 'sentence' }
+		builder.sentence(map, '.').should eql('(.sentence.)')
+
+		#	so, let's try an indirection through the sequence
+		#		we're testing by omission
+		#		we won't see a phrase if the text is nil
+		sequencer = builder.to_sequencer
+
+		sequencer.phrases.should have(2).phrases
+		sequencer.phrases(:text => 'phrase').should have(3).phrases
+
+		phrases = []
+		sequencer.each_phrase {|phrase| phrases << phrase }
+		phrases.should have(2).phrases
+
+		phrases = []
+		sequencer.each_phrase(:text => 'phrase') {|phrase| phrases << phrase }
+		phrases.should have(3).phrases
+	end
+
 end

@@ -68,22 +68,24 @@ describe MadderLib::Conditional::Helper do
 
 
 	it "a TestBlock in minutes" do
-		tester = MadderLib::Conditional::Helper::TestBlock.new(1, :minute)
+		tester = MadderLib::Conditional::Helper::TestBlock.new(2, :minute)
 
 		pound_on do
 			built = tester.block
 
-			built.call(2).should be_true
-			built.call(3).should_not be_true
+			#	0, 1 ...
+			built.call(1).should be_true
+			built.call(2).should_not be_true
 		end
 
-		tester = MadderLib::Conditional::Helper::TestBlock.new(1, 2, :minute)
+		tester = MadderLib::Conditional::Helper::TestBlock.new(2, 4, :minute)
 
 		pound_on do
 			built = tester.block
 
-			built.call(2).should be_true
-			built.call(6).should_not be_true
+			#	0, 1 ...
+			built.call(1).should be_true
+			built.call(4).should_not be_true
 		end
 	end
 

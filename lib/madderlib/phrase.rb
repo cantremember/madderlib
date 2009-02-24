@@ -66,12 +66,14 @@ module MadderLib
 				end
 			end
 
-			found = (found ? found.speak(context) : [])
-			unless found.empty?
+			if found
 				#	track our instructions
 				context.instructions << found
+
+				#	now, speak your say (as words)
+				found = found.speak(context)
 			end
-			found
+			found || []
 		end
 
 

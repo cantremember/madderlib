@@ -24,6 +24,14 @@ module MadderLib
 			hash
 		end
 
+		#	easy usage
+		def [](k)
+			@data[k]
+		end
+		def []=(k, v)
+			@data[k] = v
+		end
+
 		def contexts(mode=nil)
 			mode ||= :flat
 

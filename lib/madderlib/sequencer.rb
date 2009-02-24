@@ -29,10 +29,10 @@ module MadderLib
 
 
 		#	returns each word in the sequence
-		def words(&block)
+		def words(data=nil, &block)
 			#	sequence the phrases
 			#		*sigh* verb and a noun
-			nodes = sequence &block
+			nodes = sequence(data, &block)
 
 			#	composite the words
 			#		each node contains an array of words
@@ -40,24 +40,25 @@ module MadderLib
 		end
 
 		#	iterates over each word in the sequence
-		def each_word
-			self.words.each {|word| yield word }
+		def each_word(data=nil)
+			self.words(data).each {|word| yield word }
 		end
 		alias :each :each_word
 
-		#	iterates over each word in the sequence
-		def phrases(&block)
+		#	returns each phrase in the sequence
+		def phrases(data=nil, &block)
 			#	sequence the phrases
 			#		*sigh* verb and a noun
-			nodes = sequence &block
+			nodes = sequence(data, &block)
 
 			#	only care about the phrases
+			#		these will all have been 'spoken'
 			nodes.collect {|node| node.phrase }
 		end
 
-		#	returns each phrase in the sequence
-		def each_phrase(&block)
-			self.phrases.each {|phrase| yield phrase }
+		#	iterates over each phrase in the sequence
+		def each_phrase(data=nil, &block)
+			self.phrases(data).each {|phrase| yield phrase }
 		end
 
 
@@ -65,23 +66,28 @@ module MadderLib
 		#	- - - - -
 		protected
 
-		RESULT_NODE = Struct.new(:phrase, :words, :before, :after )
+		RESULT_NODE = Struct.new(:phrase, :words, :before, :after)
 
-		def sequence(&block)
+		def sequence(data=nil, &block)
 			#	this is where we do all the sequencing
 			#	each phrase gets invoked, and any words it returns are used
 			#	if no words are returned, it's skipped
 			#	otherwise, look for befores and afters, and apply them
 			#		same logic for each before / after as above
 			#	then, pepper in the anytimes, including boundaries, etc
+
+			#	fresh context
 			context = Context.new(self)
+
+			#	bring in all the custom data
+			context.data.merge!(data) if data
 
 			#	one-shot dispatch
 			Context.invoke(block, context) if block_given?
 
 			if (@setup)
 				#	dispatch to each block
-				@setup.each {|block| Context.invoke(block, context) }
+				@setup.each {|blk| Context.invoke(blk, context) }
 			end
 
 			#	all the basic steps
@@ -230,7 +236,7 @@ module MadderLib
 
 			if (@teardown)
 				#	dispatch to each block
-				@teardown.each {|block| Context.invoke(block, context) }
+				@teardown.each {|blk| Context.invoke(blk, context) }
 			end
 
 			flattened

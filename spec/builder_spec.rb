@@ -48,7 +48,7 @@ describe MadderLib::Builder, "building" do
 
 	it "has id support for some phrase construction methods, not for others" do
 		[
-			:a, :an, :new,
+			:a, :an,
 			:then, :and_then, :also,
 			:first, :last, :lastly,
 			:anytime,
@@ -87,11 +87,6 @@ describe MadderLib::Builder, "building" do
 
 		@builder.an(:other).should_not equal(phrase)
 		@builder.should have(2).phrases
-
-		phrase = @builder.phrase
-
-		@builder.new(:phrase).should_not equal(phrase)
-		@builder.should have(3).phrases
 	end
 
 	it "will not permit duplicate phrase ids" do
@@ -268,27 +263,46 @@ describe MadderLib::Builder, "building" do
 		end
 		builder.id.should equal(:clone_original)
 
+		#	clone
 		extended = builder.clone(:clone_extended).extend do
 			before(:early).say "it's"
 			after(:late).say 'bird'
 		end
+		extended[:meta] = :extended
+		metas = nil
+		block = lambda {|context| metas << context.builder[:meta] }
+		extended.setup &block
+		extended.teardown &block
+
+		#	modify a shared Phrase
+		shared = builder.phrases.find {|phrase| phrase.id == :late }
+		shared.instructions.first.words << 'later'
 
 		#	new id, in the registry
 		extended.id.should equal(:clone_extended)
 		extended.should equal(madderlib_grammar[:clone_extended])
 
-		extended.sentence.should eql("it's early late bird")
+		#	setup, teardown, meta, and extended content
+		metas = []
+		extended.sentence.should eql("it's early late later bird")
+		metas.should eql([:extended, :extended])
 
 		#	original is not impacted
-		builder.sentence.should eql('early late')
+		#		except for the shared Phrase
+		metas = []
+		builder.sentence.should eql('early late later')
+		builder[:meta].should be_nil
+		metas.should have(0).items
 	end
+
+
 
 	it "holds metadata for you" do
 		builder = madderlib do
 			meta[:cow] = :cow		end
 		builder.meta[:dog] = :dog
 
-		[:cow, :dog].each {|item| builder.meta[item].should equal(item) }
+		[:cow, :dog].each {|item| builder[item].should equal(item) }
 	end
 
 end
