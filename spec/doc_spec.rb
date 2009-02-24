@@ -240,5 +240,30 @@ describe MadderLib, "tests from the documentation" do
 		end
 		builder.sentence.should eql('word symbol with hierarchy lambda')
 	end
+
+
+
+	it "Context.state" do
+		context = MadderLib::Context.new
+		state = context.state(:state)
+		state.should_not be_nil
+
+		state[:key] = :value
+		context.state(:state)[:key].should equal(:value)
+	end
+
+	it "Context.data accessors" do
+		context = MadderLib::Context.new
+		context.data[:key] = :value
+
+		context[:key].should equal(:value)
+	end
+
+	it "Context::EMPTY" do
+		MadderLib::Context::EMPTY.frozen?.should be_true
+
+		lambda { MadderLib::Context::EMPTY.state(:immutable) }.should raise_error TypeError
+		lambda { MadderLib::Context::EMPTY[:immutable] = true }.should raise_error TypeError
+	end
 end
 

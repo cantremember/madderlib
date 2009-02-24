@@ -92,7 +92,7 @@ describe MadderLib::Conditional::Helper do
 
 
 	it "can convert a TestBlock criterion into an integer" do
-		context = MadderLib::Context::EMPTY
+		context = MadderLib::Context.new
 
 		tester = MadderLib::Conditional::Helper::TestBlock.new(1)
 		tester.to_i(context).should eql(1)

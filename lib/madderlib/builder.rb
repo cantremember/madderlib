@@ -1,5 +1,3 @@
-#Builder object for MadderLibs
-
 %w{ generator }.each {|lib| require lib }
 
 
@@ -41,11 +39,12 @@ module MadderLib
 
 		#The (optional) id of the Builder
 		attr_reader :id
-		#A list of each Phrase (rule) within the Builder
+		#An Array of each Phrase (rule) within the Builder
 		attr_reader :phrases
-		#A list containing the id from each Phrase which has one (they're optional)
+		#An Array containing the id from each Phrase which has one (they're optional)
 		attr_reader :phrase_ids
-		#A hash of additional meta-data for the Builder
+		#A Hash of arbitrary meta-data for the Builder.
+		#It is reserved for custom developer logic; the Builder doesn't consider its meta-data
 		attr_reader :meta
 
 		#Constructs a new Builder.

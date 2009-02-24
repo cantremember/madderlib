@@ -7,7 +7,7 @@ describe MadderLib::Instruction do
 	it "'say' ignores nils" do
 		phrase = nil
 		#	no sequencer
-		context = MadderLib::Context.new(nil)
+		context = MadderLib::Context.new
 
 		#	nil, nothing else
 		instruction = MadderLib::Instruction.new(phrase, nil)
@@ -27,7 +27,7 @@ describe MadderLib::Instruction do
 	it "'say' ignores blanks" do
 		phrase = nil
 		#	no sequencer
-		context = MadderLib::Context.new(nil)
+		context = MadderLib::Context.new
 
 		#	blank, nothing else
 		instruction = MadderLib::Instruction.new(phrase, "")
@@ -63,9 +63,11 @@ describe MadderLib::Instruction do
 
 
 	it "can convert phrase results into words" do
+		context = MadderLib::Context.new
+
 		#	simple values, and a Proc
 		words = ['one', :two, nil, lambda { 3 }].collect do |value|
-			MadderLib::Instruction.wordify(value, MadderLib::Context::EMPTY)
+			MadderLib::Instruction.wordify(value, context)
 		end
 
 		words.should eql(['one', 'two', nil, '3'])
@@ -74,7 +76,7 @@ describe MadderLib::Instruction do
 		#		flattening within array
 		#		nil considerations are retained
 		words = [:a, [:b, [:c, nil]], lambda { [:d, :e] }].collect do |value|
-			MadderLib::Instruction.wordify(value, MadderLib::Context::EMPTY)
+			MadderLib::Instruction.wordify(value, context)
 		end
 
 		words.should eql(['a', ['b', 'c', nil], ['d', 'e']])
@@ -92,7 +94,7 @@ describe MadderLib::Instruction do
 		end
 		builder.words.should eql(%w{ one two 3 d e f g })
 
-		words = MadderLib::Instruction.wordify(builder, MadderLib::Context::EMPTY)
+		words = MadderLib::Instruction.wordify(builder, context)
 		words.should have(7).words
 		words.should eql(%w{ one two 3 d e f g })
 	end

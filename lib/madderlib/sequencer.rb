@@ -1,5 +1,11 @@
 module MadderLib
-	class Sequencer
+	#= Sequencer
+	#
+	#A utility class used by a Builder for the actual building process.
+	#
+	#A Sequencer provides no useful functionality to users of MadderLib.
+	#All of its value is inherent in the Builder and Phrase objects that it leverages.
+	class Sequencer #:nodoc: all
 		include Enumerable
 
 		attr_reader :builder, :steps, :ids
