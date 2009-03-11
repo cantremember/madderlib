@@ -98,4 +98,13 @@ describe MadderLib::Grammar do
 		builder.to_s.should eql('no-id')
 	end
 
+	it "supports map-like access for Builders" do
+		grammar = MadderLib::Grammar.new
+
+		grammar[:test].should be_nil
+
+		grammar[:test] ||= madderlib { }
+		grammar[:test].should_not be_nil
+	end
+
 end

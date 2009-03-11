@@ -318,4 +318,13 @@ describe MadderLib::Builder, "building" do
 		[:cow, :dog].each {|item| builder[item].should equal(item) }
 	end
 
+	it "supports map-like access for meta-data" do
+		builder = madderlib { }
+
+		builder[:test].should be_nil
+
+		builder[:test] ||= :value
+		builder[:test].should_not be_nil
+	end
+
 end

@@ -191,6 +191,9 @@ module MadderLib
 		def [](key)
 			@builder_map[key]
 		end
+		def []=(key, builder)
+			@builder_map[key] = builder
+		end
 
 		#Freezes, and closes / completes, the current Grammar
 		#
