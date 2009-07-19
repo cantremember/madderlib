@@ -343,7 +343,8 @@ describe MadderLib::Builder, "to Sequencer" do
 		builder = madderlib :inject_data do
 			say '('
 			say {|context| context[:text] }
-			say ')'		end
+			say ')'
+		end
 
 		#	text is nil, so doesn't appear
 		builder.words.should eql(['(', ')'])
@@ -354,6 +355,12 @@ describe MadderLib::Builder, "to Sequencer" do
 		context = nil
 
 		words = builder.words(:text => 'words') {|ctx| context = ctx }
+		context.should_not be_nil
+
+    # you had no children involved
+		context.contexts.empty?.should be_true
+		
+    # injected data
 		context[:text].should eql('words')
 		words.should eql(['(', context[:text], ')'])
 

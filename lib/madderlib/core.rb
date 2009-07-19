@@ -125,7 +125,8 @@ module MadderLib
 			@builder_map = {}
 
 			#	randomness
-			srand(Time.now.to_i)
+			#   which we should NOT be responsible for
+			###srand(Time.now.to_i)
 		end
 
 		#Adds a Builder to the Grammar.

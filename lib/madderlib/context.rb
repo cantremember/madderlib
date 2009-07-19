@@ -75,12 +75,14 @@ module MadderLib
 			@data[k] = v
 		end
 
-		#Returns a list of all sub-contexts which were generated during Builder execution.
-		#These would come from any Builders that were executed as children of their parent Builder
-		#The list will <i>not</i> include self, only its children (etc.)
+		#Returns an Array of all sub-contexts which were generated during Builder execution.
+		#These would come from any Builders that were executed as children of their parent Builder.
+		#The list will <i>not</i> include self, only its children (etc.).
+		#So if the Array is empty, the only the <i>self</i> Context was involved, with no children.
 		#
-		#The sub-contexts will be returned as an Array, and so on down the Context hierarchy.
-		#If <code>:flat</code> is passed as an argument, the Array returned will contain a flattened hierarchy
+		#The sub-contexts will be returned as an Array.
+		#If <code>:flat</code> is passed as an argument, the Array returned will contain a flattened version of the hierarchy
+		#Any other argument, such as <code>:tree</code>, and the Array returned will contain an <i>un-flattened</i> Context hierarchy
 		def contexts(mode=nil)
 			mode ||= :flat
 

@@ -107,4 +107,24 @@ describe MadderLib::Grammar do
 		grammar[:test].should_not be_nil
 	end
 
+
+
+	it "provides the Builders with cumulative state" do
+		#	what you pull out a Builder that does randomness
+		#   it should NOT repeat itself!
+		builder = madderlib do
+			say('one')
+			say('two?').repeat(1, 3)
+			say('three').or.say('tres').or.say('drei')
+			say('3.5').if { rand < 0.5 }
+			say('four')
+		end
+		
+		all = []
+		10.times do
+		  all << madderlib_grammar.builders.first.sentence
+		end
+		all.uniq.should have_at_least(2).sentences
+	end
+
 end
