@@ -1,0 +1,5 @@
+#!/bin/bash
+docker run  --name ruby-archive2 --rm  --privileged \
+  --mount type=bind,target=/opt/project,source="$(pwd)" \
+  --workdir /opt/project \
+  -it cantremember/ruby-1.8.7:latest

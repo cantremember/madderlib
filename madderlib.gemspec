@@ -4,8 +4,8 @@ Gem::Specification.new do |s|
 	s.required_ruby_version = '>= 1.8'
 
 	s.name = 'madderlib'
-	s.version = '0.1.1'
-	s.date = "2009-02-14"
+	s.version = '0.1.2'
+	s.date = "2023-04-02"
 
 	s.description = "MadderLib : a Sentence-Building DSL for the easily amused"
 	s.summary     = "#{s.name} #{s.version}"
@@ -63,7 +63,6 @@ Gem::Specification.new do |s|
 	s.add_dependency 'GEM-NAME', '>= GEM-VERSION'
 =end
 
-	s.has_rdoc = true
 	#	only because there ain't no spaces in the title ...
 	s.rdoc_options = %w{ --line-numbers --inline-source --title MadderLib --main README.rdoc }
 	s.extra_rdoc_files = %w{ README.rdoc CHANGELOG LICENSE }

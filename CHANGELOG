@@ -1,3 +1,11 @@
+= 0.1.2
+
+    * removed bad `require` of 'generators'
+
+= 0.1.1
+
+    * supports map-like access for data, meta-data, Builders
+
 = 0.1.0
 
 	* Initial gem release of 0.1 codebase.

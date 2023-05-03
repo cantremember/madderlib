@@ -1,7 +1,3 @@
-%w{ generator }.each {|lib| require lib }
-
-
-
 module MadderLib
 	#= Builder
 	#
